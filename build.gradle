@@ -31,7 +31,9 @@ repositories {
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-    testCompile("org.springframework.boot:spring-boot-starter-test") 
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("com.github.jreddit:jreddit:1.0.3")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
 
