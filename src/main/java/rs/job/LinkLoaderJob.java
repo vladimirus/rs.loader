@@ -23,6 +23,22 @@ public class LinkLoaderJob {
     @Scheduled(initialDelay = 10000, fixedRate = 5000)
     public void load() {
         submissions.ofSubreddit("funny", TOP, -1, 25, null, null, true)
-                .forEach(submission -> linkManager.save(linkConverter.convert(submission)));
+                .stream()
+                .map(submission -> {
+                    try {
+                        return linkConverter.convert(submission);
+                    } catch (Exception e) {
+                        log.error("can't convert submission, ignoring", e);
+                        return null;
+                    }
+                })
+                .filter(link -> link != null)
+                .forEach(link -> {
+                    try {
+                        linkManager.save(link);
+                    } catch (Exception e) {
+                        log.error("can't save link, ignoring", e);
+                    }
+                });
     }
 }

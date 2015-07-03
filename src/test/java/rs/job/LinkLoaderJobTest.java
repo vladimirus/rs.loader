@@ -48,4 +48,23 @@ public class LinkLoaderJobTest {
         verify(linkConverter, times(2)).convert(any(Submission.class));
         verify(linkManager, times(2)).save(any(Link.class));
     }
+
+    @Test
+    public void shouldLoadTwo() {
+        // given
+        Submission submission = mock(Submission.class);
+        given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(25), eq(null), eq(null), eq(true)))
+                .willReturn(asList(submission, submission, submission));
+        given(linkConverter.convert(any(Submission.class)))
+                .willReturn(aLink())
+                .willThrow(new RuntimeException("test"))
+                .willReturn(aLink());
+
+        // when
+        linkLoaderJob.load();
+
+        // then
+        verify(linkConverter, times(3)).convert(any(Submission.class));
+        verify(linkManager, times(2)).save(any(Link.class));
+    }
 }

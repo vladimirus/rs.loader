@@ -2,6 +2,7 @@ package rs;
 
 import com.github.jreddit.entity.User;
 import com.github.jreddit.retrieval.Submissions;
+import com.github.jreddit.retrieval.Subreddits;
 import com.github.jreddit.utils.restclient.PoliteHttpRestClient;
 import com.github.jreddit.utils.restclient.RestClient;
 import org.springframework.context.annotation.Bean;
@@ -29,5 +30,10 @@ public class RsConfig {
     @Bean
     public Submissions submissions() {
         return new Submissions(redditClient(), redditUser());
+    }
+
+    @Bean
+    public Subreddits subreddits() {
+        return new Subreddits(redditClient(), redditUser());
     }
 }
