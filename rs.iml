@@ -121,5 +121,7 @@
     <orderEntry type="library" exported="" name="Gradle: org.sonatype.sisu:sisu-guice:2.1.7:noaop" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpclient:4.3.5" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.projectlombok:lombok:1.16.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework.boot:spring-boot-starter-actuator:1.2.4.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework.boot:spring-boot-actuator:1.2.4.RELEASE" level="project" />
   </component>
 </module>

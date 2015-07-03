@@ -24,6 +24,5 @@ public class LinkLoaderJob {
     public void load() {
         submissions.ofSubreddit("funny", TOP, -1, 25, null, null, true)
                 .forEach(submission -> linkManager.save(linkConverter.convert(submission)));
-
     }
 }
