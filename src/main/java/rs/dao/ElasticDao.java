@@ -14,14 +14,15 @@ public class ElasticDao implements LinkDao {
 
     @Override
     public void save(Link link) {
+        template.index(indexQuery(link));
+    }
 
-        IndexQuery indexQuery = new IndexQueryBuilder()
+    private IndexQuery indexQuery(Link link) {
+        return new IndexQueryBuilder()
                 .withObject(link)
                 .withId(link.getId())
                 .withIndexName("rs")
                 .withType("link")
                 .build();
-
-        template.index(indexQuery);
     }
 }

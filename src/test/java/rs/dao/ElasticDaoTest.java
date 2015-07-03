@@ -2,6 +2,7 @@ package rs.dao;
 
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
+import static rs.TestFactory.aLink;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
-import rs.model.Link;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -24,7 +24,7 @@ public class ElasticDaoTest {
     public void shouldSave() {
 
         // when
-        elasticDao.save(new Link("id", "title", "url"));
+        elasticDao.save(aLink());
 
         // then
         verify(template).index(isA(IndexQuery.class));

@@ -1,7 +1,7 @@
 package rs;
 
 import com.github.jreddit.entity.User;
-import com.github.jreddit.utils.restclient.HttpRestClient;
+import com.github.jreddit.utils.restclient.PoliteHttpRestClient;
 import com.github.jreddit.utils.restclient.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ public class RsConfig {
 
     @Bean
     public RestClient redditClient() {
-        RestClient restClient = new HttpRestClient();
+        RestClient restClient = new PoliteHttpRestClient();
         restClient.setUserAgent("rs client yo!");
         return restClient;
     }
