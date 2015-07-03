@@ -20,7 +20,7 @@ public class LinkLoaderJob {
     @Autowired
     private LinkManager linkManager;
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(initialDelay = 10000, fixedRate = 5000)
     public void load() {
         submissions.ofSubreddit("funny", TOP, -1, 25, null, null, true)
                 .forEach(submission -> linkManager.save(linkConverter.convert(submission)));
