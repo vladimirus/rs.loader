@@ -3,15 +3,15 @@ package rs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.dao.SimpleDao;
-import rs.model.Link;
+import rs.model.Topic;
 
 @Service
-public class LinkManager implements SimpleManager<Link> {
+public class TopicManager implements SimpleManager<Topic> {
     @Autowired
-    private SimpleDao<Link> linkDao;
+    private SimpleDao<Topic> linkDao;
 
     @Override
-    public void save(Link link) {
+    public void save(Topic link) {
         linkDao.save(link);
     }
 }
