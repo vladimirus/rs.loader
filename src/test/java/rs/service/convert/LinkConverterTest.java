@@ -1,4 +1,4 @@
-package rs.service;
+package rs.service.convert;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

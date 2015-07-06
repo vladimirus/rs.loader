@@ -19,7 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import rs.model.Link;
-import rs.service.LinkConverter;
+import rs.service.convert.Converter;
 import rs.service.LinkManager;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,7 +29,7 @@ public class LinkLoaderJobTest {
     @Mock
     private Submissions submissions;
     @Mock
-    private LinkConverter linkConverter;
+    private Converter<Submission, Link> linkConverter;
     @Mock
     private LinkManager linkManager;
 
@@ -37,7 +37,7 @@ public class LinkLoaderJobTest {
     public void shouldLoad() {
         // given
         Submission submission = mock(Submission.class);
-        given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(25), eq(null), eq(null), eq(true)))
+        given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission));
         given(linkConverter.convert(any(Submission.class))).willReturn(aLink());
 
@@ -53,7 +53,7 @@ public class LinkLoaderJobTest {
     public void shouldLoadTwo() {
         // given
         Submission submission = mock(Submission.class);
-        given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(25), eq(null), eq(null), eq(true)))
+        given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission, submission));
         given(linkConverter.convert(any(Submission.class)))
                 .willReturn(aLink())
