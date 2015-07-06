@@ -8,23 +8,23 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import rs.dao.LinkDao;
+import rs.dao.SimpleDao;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultLinkManagerTest {
     @InjectMocks
-    private DefaultLinkManager defaultLinkManager;
+    private LinkManager linkManager;
     @Mock
-    private LinkDao linkDao;
+    private SimpleDao simpleDao;
 
     @Test
     public void shouldSave() {
 
         // when
-        defaultLinkManager.save(aLink());
+        linkManager.save(aLink());
 
         // then
-        verify(linkDao).save(aLink());
+        verify(simpleDao).save(aLink());
 
     }
 }

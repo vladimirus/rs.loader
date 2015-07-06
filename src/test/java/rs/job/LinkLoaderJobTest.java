@@ -19,8 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import rs.model.Link;
+import rs.service.SimpleManager;
 import rs.service.convert.Converter;
-import rs.service.LinkManager;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LinkLoaderJobTest {
@@ -31,7 +31,7 @@ public class LinkLoaderJobTest {
     @Mock
     private Converter<Submission, Link> linkConverter;
     @Mock
-    private LinkManager linkManager;
+    private SimpleManager<Link> linkManager;
 
     @Test
     public void shouldLoad() {

@@ -14,17 +14,17 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class ElasticDaoTest {
+public class LinkDaoTest {
+    @InjectMocks
+    private LinkDao linkDao;
     @Mock
     private ElasticsearchTemplate template;
-    @InjectMocks
-    private ElasticDao elasticDao;
 
     @Test
     public void shouldSave() {
 
         // when
-        elasticDao.save(aLink());
+        linkDao.save(aLink());
 
         // then
         verify(template).index(isA(IndexQuery.class));
