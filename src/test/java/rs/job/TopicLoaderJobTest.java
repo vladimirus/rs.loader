@@ -1,6 +1,9 @@
 package rs.job;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -45,6 +48,26 @@ public class TopicLoaderJobTest {
         // then
         verify(topicConverter, times(2)).convert(any(Subreddit.class));
         verify(topicManager, times(2)).save(any(Topic.class));
+    }
+
+    @Test
+    public void shouldGetLast() {
+
+        // when
+        Subreddit actual = topicLoaderJob.lastSubreddit(aTopic("t5_2qh33"));
+
+        // then
+        assertThat(actual.getFullName(), is("t5_2qh33"));
+    }
+
+    @Test
+    public void shouldNotGetLast() {
+
+        // when
+        Subreddit actual = topicLoaderJob.lastSubreddit(null);
+
+        // then
+        assertThat(actual, is(nullValue()));
     }
 
 }

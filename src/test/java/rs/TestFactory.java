@@ -30,8 +30,12 @@ public class TestFactory {
     }
 
     public static Topic aTopic() {
+        return  aTopic("id");
+    }
+
+    public static Topic aTopic(String id) {
         return Topic.builder()
-                .id("id")
+                .id(id)
                 .displayName("displayName")
                 .title("title")
                 .created(new Date())
