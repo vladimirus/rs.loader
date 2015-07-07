@@ -12,7 +12,7 @@ import rs.dao.SimpleDao;
 import rs.model.Link;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultLinkManagerTest {
+public class LinkManagerTest {
     @InjectMocks
     private LinkManager linkManager;
     @Mock
