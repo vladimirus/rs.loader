@@ -15,7 +15,18 @@ public class TestFactory {
         return Link.builder()
                 .id("id")
                 .title("title")
-                .url("http://url").build();
+                .url("http://url")
+                .commentsUrl("http://comments")
+                .author("author")
+                .subreddit("subreddit")
+                .subredditId("subredditId")
+                .commentCount(1l)
+                .score(1l)
+                .created(new Date())
+                .self(false)
+                .nsfw(false)
+                .hidden(false)
+                .build();
     }
 
     public static Topic aTopic() {

@@ -8,6 +8,8 @@ import lombok.NonNull;
 import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.util.Date;
+
 @Builder
 @Getter
 @ToString
@@ -20,4 +22,29 @@ public class Link {
     private String title;
     @NonNull
     private String url;
+    @NonNull
+    private String commentsUrl;
+    @NonNull
+    private String author;
+    @NonNull
+    private String subreddit;
+    @NonNull
+    private String subredditId;
+    @NonNull
+    private Long commentCount;
+    @NonNull
+    private Long score;
+    @NonNull
+    private Date created;
+    @NonNull
+    private Boolean self;
+    @NonNull
+    private Boolean nsfw;
+    @NonNull
+    private Boolean hidden;
+
+    private String thumbnail;
+    private String selfText;
+    private String selfTextHtml;
+    private String domain;
 }

@@ -23,9 +23,19 @@ public class LinkConverterTest {
     public void shouldConvert() {
         // given
         Submission submission = mock(Submission.class);
+        given(submission.getFullName()).willReturn("id");
         given(submission.getTitle()).willReturn("title");
         given(submission.getUrl()).willReturn("url");
-        given(submission.getFullName()).willReturn("name");
+        given(submission.getPermalink()).willReturn("commentsUrl");
+        given(submission.getAuthor()).willReturn("author");
+        given(submission.getSubreddit()).willReturn("subreddit");
+        given(submission.getSubredditId()).willReturn("subredditId");
+        given(submission.getCommentCount()).willReturn(1L);
+        given(submission.getScore()).willReturn(1L);
+        given(submission.getCreatedUTC()).willReturn(1.0);
+        given(submission.isSelf()).willReturn(false);
+        given(submission.isNSFW()).willReturn(false);
+        given(submission.isHidden()).willReturn(false);
 
         // when
         Link actual = linkConverter.convert(submission);
