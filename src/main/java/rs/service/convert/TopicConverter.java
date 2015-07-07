@@ -1,5 +1,7 @@
 package rs.service.convert;
 
+import static java.util.Optional.ofNullable;
+
 import com.github.jreddit.entity.Subreddit;
 import org.springframework.stereotype.Component;
 import rs.model.Topic;
@@ -18,7 +20,7 @@ public class TopicConverter implements Converter<Subreddit, Topic> {
                 .created(new Date((long) subreddit.getCreatedUTC() * 1000))
                 .nsfw(subreddit.isNSFW())
                 .subscribers(subreddit.getSubscribers())
-                .description(subreddit.getDescription())
+                .description(ofNullable(subreddit.getDescription()).orElse(""))
                 .type(subreddit.getSubredditType())
                 .build();
     }
