@@ -24,6 +24,13 @@ public class TopicConverterTest {
         // given
         Subreddit submission = mock(Subreddit.class);
         given(submission.getFullName()).willReturn("name");
+        given(submission.getDisplayName()).willReturn("display");
+        given(submission.getTitle()).willReturn("title");
+        given(submission.getCreatedUTC()).willReturn(1.0);
+        given(submission.isNSFW()).willReturn(false);
+        given(submission.getSubscribers()).willReturn(1L);
+        given(submission.getDescription()).willReturn("this is description");
+        given(submission.getSubredditType()).willReturn("public");
 
         // when
         Topic actual = topicConverter.convert(submission);

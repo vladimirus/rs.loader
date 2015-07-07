@@ -7,6 +7,8 @@ import lombok.NonNull;
 import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.util.Date;
+
 @Builder
 @Getter
 @ToString
@@ -15,4 +17,18 @@ import org.springframework.data.elasticsearch.annotations.Document;
 public class Topic {
     @NonNull
     private String id;
+    @NonNull
+    private String displayName;
+    @NonNull
+    private String title;
+    @NonNull
+    private Date created;
+    @NonNull
+    private Boolean nsfw;
+    @NonNull
+    private Long subscribers;
+    @NonNull
+    private String description;
+    @NonNull
+    private String type;
 }
