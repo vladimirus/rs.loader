@@ -12,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Getter
 @ToString
 @EqualsAndHashCode
-@Document(indexName = "testLinks")
+@Document(indexName = "test")
 public class Link {
     @NonNull
     private String id;

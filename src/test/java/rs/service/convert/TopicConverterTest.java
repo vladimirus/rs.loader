@@ -6,33 +6,30 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import com.github.jreddit.entity.Submission;
+import com.github.jreddit.entity.Subreddit;
 import org.junit.Before;
 import org.junit.Test;
-import rs.model.Link;
+import rs.model.Topic;
 
-public class LinkConverterTest {
-    private LinkConverter linkConverter;
+public class TopicConverterTest {
+    private TopicConverter topicConverter;
 
     @Before
     public void setup() {
-        this.linkConverter = new LinkConverter();
+        this.topicConverter = new TopicConverter();
     }
 
     @Test
     public void shouldConvert() {
         // given
-        Submission submission = mock(Submission.class);
-        given(submission.getTitle()).willReturn("title");
-        given(submission.getUrl()).willReturn("url");
+        Subreddit submission = mock(Subreddit.class);
         given(submission.getFullName()).willReturn("name");
 
         // when
-        Link actual = linkConverter.convert(submission);
+        Topic actual = topicConverter.convert(submission);
 
         // then
         assertThat(actual, is(notNullValue()));
-        assertThat(actual.getTitle(), is("title"));
-        assertThat(actual.getUrl(), is("url"));
+        assertThat(actual.getId(), is("name"));
     }
 }

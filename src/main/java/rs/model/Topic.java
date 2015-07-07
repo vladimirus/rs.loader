@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Getter
 @ToString
 @EqualsAndHashCode
-@Document(indexName = "testTopics")
+@Document(indexName = "test")
 public class Topic {
     @NonNull
     private String id;
