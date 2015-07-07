@@ -1,8 +1,7 @@
 package rs.job;
 
-import com.google.common.eventbus.AsyncEventBus;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
 import java.util.Collection;
@@ -11,10 +10,8 @@ import java.util.stream.Stream;
 
 public abstract class AbstractLoaderJob<F, T> {
     private Logger log = Logger.getLogger(AbstractLoaderJob.class);
-    @Autowired
-    private AsyncEventBus eventBus;
 
-    Collection<T> load(Stream<F> stream, Converter<F, T> converter) {
+    Collection<T> load(Stream<F> stream, Converter<F, T> converter, SimpleManager<T> manager) {
         return stream.map(original -> {
                     try {
                         return converter.convert(original);
@@ -26,10 +23,10 @@ public abstract class AbstractLoaderJob<F, T> {
                 .filter(out -> out != null)
                 .filter(out -> {
                     try {
-                        eventBus.post(out);
+                        manager.save(out);
                         return true;
                     } catch (Exception e) {
-                        log.error("can't post, ignoring", e);
+                        log.error("can't save, ignoring", e);
                         return false;
                     }
                 })

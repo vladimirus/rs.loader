@@ -17,7 +17,6 @@ import static rs.TestFactory.aTopic;
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.params.SubmissionSort;
-import com.google.common.eventbus.AsyncEventBus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import rs.model.Link;
 import rs.model.Topic;
+import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,7 +36,7 @@ public class LinkLoaderJobTest {
     @Mock
     private Converter<Submission, Link> linkConverter;
     @Mock
-    private AsyncEventBus eventBus;
+    private SimpleManager<Link> linkManager;
 
     @Test
     public void shouldNotLoadWhenNoTopics() {
@@ -46,7 +46,7 @@ public class LinkLoaderJobTest {
 
         // then
         verify(linkConverter, never()).convert(any(Submission.class));
-        verify(eventBus, never()).post(any(Link.class));
+        verify(linkManager, never()).save(any(Link.class));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class LinkLoaderJobTest {
 
         // then
         verify(linkConverter, times(2)).convert(any(Submission.class));
-        verify(eventBus, times(2)).post(any(Link.class));
+        verify(linkManager, times(2)).save(any(Link.class));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class LinkLoaderJobTest {
 
         // then
         verify(linkConverter, times(3)).convert(any(Submission.class));
-        verify(eventBus, times(2)).post(any(Link.class));
+        verify(linkManager, times(2)).save(any(Link.class));
     }
 
     @Test

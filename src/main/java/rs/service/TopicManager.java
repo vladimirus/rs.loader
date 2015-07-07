@@ -1,6 +1,6 @@
 package rs.service;
 
-import com.google.common.eventbus.Subscribe;
+import com.google.common.eventbus.AsyncEventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.dao.SimpleDao;
@@ -10,10 +10,12 @@ import rs.model.Topic;
 public class TopicManager implements SimpleManager<Topic> {
     @Autowired
     private SimpleDao<Topic> linkDao;
+    @Autowired
+    private AsyncEventBus eventBus;
 
     @Override
-    @Subscribe
     public void save(Topic topic) {
         linkDao.save(topic);
+        eventBus.post(topic);
     }
 }

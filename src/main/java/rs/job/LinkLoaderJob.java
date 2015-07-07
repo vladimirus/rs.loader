@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.model.Link;
 import rs.model.Topic;
+import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
 import java.util.LinkedList;
@@ -21,6 +22,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private Submissions submissions;
     @Autowired
     private Converter<Submission, Link> linkConverter;
+    @Autowired
+    private SimpleManager<Link> linkManager;
 
     Queue<Topic> queue = new LinkedList<>();
 
@@ -28,7 +31,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     public void load() {
         Topic topic = queue.poll();
         if (topic != null) {
-            load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter);
+            load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkManager);
         }
     }
 

@@ -1,6 +1,5 @@
 package rs.service;
 
-import com.google.common.eventbus.Subscribe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.dao.SimpleDao;
@@ -12,7 +11,6 @@ public class LinkManager implements SimpleManager<Link> {
     private SimpleDao<Link> linkDao;
 
     @Override
-    @Subscribe
     public void save(Link link) {
         linkDao.save(link);
     }
