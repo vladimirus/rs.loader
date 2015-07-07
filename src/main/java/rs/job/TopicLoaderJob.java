@@ -24,7 +24,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     private Topic last;
 
-    @Scheduled(initialDelay = 5000, fixedRate = 120000)
+    @Scheduled(initialDelay = 5000, fixedRate = 60000)
     public void load() {
         last = getLast(load(subreddits.get(POPULAR, 0, 100, lastSubreddit(last), null).stream(), topicConverter, topicManager));
     }
