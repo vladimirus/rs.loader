@@ -3,9 +3,6 @@ package rs;
 import rs.model.Link;
 import rs.model.Topic;
 
-/**
- * Created by vladimir.
- */
 public class TestFactory {
 
     private TestFactory() {
@@ -13,10 +10,14 @@ public class TestFactory {
     }
 
     public static Link aLink() {
-        return new Link("id", "title", "http://url");
+        return Link.builder()
+                .id("id")
+                .title("title")
+                .url("http://url").build();
     }
 
     public static Topic aTopic() {
-        return new Topic("id");
+        return Topic.builder()
+                .id("id").build();
     }
 }
