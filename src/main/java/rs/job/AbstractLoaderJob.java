@@ -1,11 +1,12 @@
 package rs.job;
 
+import static java.util.stream.Collectors.toList;
+
 import org.apache.log4j.Logger;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractLoaderJob<F, T> {
@@ -30,6 +31,6 @@ public abstract class AbstractLoaderJob<F, T> {
                         return false;
                     }
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 }
