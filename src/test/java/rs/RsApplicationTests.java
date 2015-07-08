@@ -12,5 +12,4 @@ public class RsApplicationTests {
 	@Test
 	public void contextLoads() {
     }
-
 }

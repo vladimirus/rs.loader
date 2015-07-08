@@ -13,6 +13,8 @@ import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
+import java.util.Collection;
+
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     @Autowired
@@ -23,6 +25,16 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     private SimpleManager<Topic> topicManager;
 
     private Topic last;
+
+    @Scheduled(initialDelay = 100, fixedRate = 609999999) //once a week, or during start
+    public void initLast() {
+        if (last == null) {
+            Collection<Topic> topics = topicManager.get(0, 1);
+            if (topics != null && !topics.isEmpty()) {
+                last = topics.iterator().next();
+            }
+        }
+    }
 
     @Scheduled(initialDelay = 5000, fixedRate = 10000)
     public void load() {
