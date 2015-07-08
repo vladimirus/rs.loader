@@ -18,6 +18,7 @@ public class TopicConverter implements Converter<Subreddit, Topic> {
                 .displayName(subreddit.getDisplayName())
                 .title(subreddit.getTitle())
                 .created(new Date((long) subreddit.getCreatedUTC() * 1000))
+                .updated(new Date())
                 .nsfw(subreddit.isNSFW())
                 .subscribers(subreddit.getSubscribers())
                 .description(ofNullable(subreddit.getDescription()).orElse(""))

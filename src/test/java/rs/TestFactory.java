@@ -39,6 +39,7 @@ public class TestFactory {
                 .displayName("displayName")
                 .title("title")
                 .created(new Date())
+                .updated(new Date())
                 .nsfw(false)
                 .subscribers(1L)
                 .description("this is description")

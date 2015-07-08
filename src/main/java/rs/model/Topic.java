@@ -31,4 +31,6 @@ public class Topic {
     private String description;
     @NonNull
     private String type;
+    @NonNull
+    private Date updated;
 }
