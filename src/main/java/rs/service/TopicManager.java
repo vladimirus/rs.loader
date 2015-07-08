@@ -6,16 +6,23 @@ import org.springframework.stereotype.Service;
 import rs.dao.SimpleDao;
 import rs.model.Topic;
 
+import java.util.Collection;
+
 @Service
 public class TopicManager implements SimpleManager<Topic> {
     @Autowired
-    private SimpleDao<Topic> linkDao;
+    private SimpleDao<Topic> topicDao;
     @Autowired
     private AsyncEventBus eventBus;
 
     @Override
     public void save(Topic topic) {
-        linkDao.save(topic);
+        topicDao.save(topic);
         eventBus.post(topic);
+    }
+
+    @Override
+    public Collection<Topic> get(int pageNumber, int size) {
+        return topicDao.get(pageNumber, size);
     }
 }

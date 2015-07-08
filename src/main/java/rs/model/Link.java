@@ -1,15 +1,19 @@
 package rs.model;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.Date;
 
+@NoArgsConstructor //this needed for ES
+@AllArgsConstructor
 @Builder
 @Getter
 @ToString

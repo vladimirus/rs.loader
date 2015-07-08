@@ -37,6 +37,8 @@ public class LinkLoaderJobTest {
     private Converter<Submission, Link> linkConverter;
     @Mock
     private SimpleManager<Link> linkManager;
+    @Mock
+    private SimpleManager<Topic> topicManager;
 
     @Test
     public void shouldNotLoadWhenNoTopics() {

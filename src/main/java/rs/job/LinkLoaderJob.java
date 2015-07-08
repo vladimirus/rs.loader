@@ -13,19 +13,31 @@ import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
-    @Autowired
     private Submissions submissions;
-    @Autowired
     private Converter<Submission, Link> linkConverter;
-    @Autowired
     private SimpleManager<Link> linkManager;
+    private SimpleManager<Topic> topicManager;
 
     Queue<Topic> queue = new LinkedList<>();
+
+    @Autowired
+    public LinkLoaderJob(Submissions submissions, SimpleManager<Topic> topicManager, Converter<Submission, Link> linkConverter, SimpleManager<Link> linkManager) {
+        this.submissions = submissions;
+        this.linkConverter = linkConverter;
+        this.linkManager = linkManager;
+        this.topicManager = topicManager;
+
+        Collection<Topic> topics = topicManager.get(0, 1000);
+        if (topics != null && !topics.isEmpty()) {
+            queue.addAll(topics);
+        }
+    }
 
     @Scheduled(initialDelay = 10000, fixedRate = 5000)
     public void load() {
