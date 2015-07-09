@@ -16,6 +16,8 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
@@ -29,8 +31,6 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private SimpleManager<Topic> topicManager;
 
     Queue<Topic> queue = new LinkedBlockingQueue<>(1000);
-    Topic topic;
-    int numberOrErrorsInARow;
 
     @Scheduled(initialDelay = 500, fixedRate = 609999999) //once a week, or during start
     public void initQueue() {
@@ -38,28 +38,24 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
             Collection<Topic> topics = topicManager.get(0, 1000);
             if (topics != null && !topics.isEmpty()) {
                 queue.addAll(topics);
-                topic = queue.poll();
             }
         }
     }
 
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
-        if (numberOrErrorsInARow > 10) {    //try X times then, change the topic
-            log.error("Error retrieving links, problem with topic: " + topic);
-            topic = queue.poll();
-        }
-
+        Topic topic = queue.poll();
         if (topic != null) {
-            try {
-                load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkManager);
-                topic = queue.poll();
-                numberOrErrorsInARow = 0;
-            } catch (Exception ignore) {
-                numberOrErrorsInARow++;
+            int numberOrErrorsInARow = 0;
+            while(numberOrErrorsInARow < 100) {
+                try {
+                    load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkManager);
+                    numberOrErrorsInARow = Integer.MAX_VALUE; //in other words exit
+                } catch (Exception ignore) {
+                    sleepUninterruptibly(1, SECONDS);
+                    numberOrErrorsInARow++;
+                }
             }
-        } else if (!queue.isEmpty()){
-            topic = queue.poll();
         }
     }
 

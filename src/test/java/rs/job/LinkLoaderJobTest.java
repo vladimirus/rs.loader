@@ -1,20 +1,5 @@
 package rs.job;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static rs.TestFactory.aLink;
-import static rs.TestFactory.aTopic;
-
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.params.SubmissionSort;
@@ -27,6 +12,18 @@ import rs.model.Link;
 import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.*;
+import static rs.TestFactory.aLink;
+import static rs.TestFactory.aTopic;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LinkLoaderJobTest {
@@ -55,7 +52,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoad() {
         // given
-        linkLoaderJob.topic = aTopic();
+        linkLoaderJob.queue.add(aTopic());
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission));
@@ -72,7 +69,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoadTwo() {
         // given
-        linkLoaderJob.topic = aTopic();
+        linkLoaderJob.queue.add(aTopic());
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission, submission));
