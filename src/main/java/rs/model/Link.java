@@ -31,9 +31,9 @@ public class Link {
     @NonNull
     private String author;
     @NonNull
-    private String subreddit;   //TODO: rename to topic
+    private String topic;
     @NonNull
-    private String subredditId; //TODO: rename to topicId
+    private String topicId;
     @NonNull
     private Long commentCount;
     @NonNull
