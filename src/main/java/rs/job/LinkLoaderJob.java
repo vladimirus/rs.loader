@@ -29,6 +29,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private SimpleManager<Topic> topicManager;
 
     Queue<Topic> queue = new LinkedList<>();
+    Topic topic;
+    int numberOrErrorsInARow;
 
     @Scheduled(initialDelay = 500, fixedRate = 609999999) //once a week, or during start
     public void initQueue() {
@@ -36,15 +38,26 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
             Collection<Topic> topics = topicManager.get(0, 1000);
             if (topics != null && !topics.isEmpty()) {
                 queue.addAll(topics);
+                topic = queue.poll();
             }
         }
     }
 
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
-        Topic topic = queue.poll();
+        if (numberOrErrorsInARow > 10) {    //try X times then, change the topic
+            topic = queue.poll();
+        }
+
         if (topic != null) {
-            load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkManager);
+            try {
+                load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkManager);
+                topic = queue.poll();
+                numberOrErrorsInARow = 0;
+            } catch (Exception e) {
+                log.error("Error retrieving subreddits", e);
+                numberOrErrorsInARow++;
+            }
         }
     }
 
