@@ -40,7 +40,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
         }
     }
 
-    @Scheduled(initialDelay = 10000, fixedRate = 5000)
+    @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
         Topic topic = queue.poll();
         if (topic != null) {
