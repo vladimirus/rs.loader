@@ -21,7 +21,9 @@ public class TopicManager implements SimpleManager<Topic> {
 
     @Override
     public void save(Topic topic) {
-        log.debug(format("Saving topic: %s, subscribers: %d", topic.getDisplayName(), topic.getSubscribers()));
+        if (log.isDebugEnabled()) {
+            log.debug(format("Saving topic: %s, subscribers: %d", topic.getDisplayName(), topic.getSubscribers()));
+        }
         topicDao.save(topic);
         eventBus.post(topic);
     }
