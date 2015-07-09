@@ -1,7 +1,5 @@
 package rs.job;
 
-import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
-
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.google.common.eventbus.Subscribe;
@@ -14,8 +12,10 @@ import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
 
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
@@ -28,7 +28,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Autowired
     private SimpleManager<Topic> topicManager;
 
-    Queue<Topic> queue = new LinkedList<>();
+    Queue<Topic> queue = new LinkedBlockingQueue<>(1000);
     Topic topic;
     int numberOrErrorsInARow;
 
