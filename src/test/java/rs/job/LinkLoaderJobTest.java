@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -98,5 +99,27 @@ public class LinkLoaderJobTest {
 
         // then
         assertThat(linkLoaderJob.queue, contains(topic));
+    }
+
+    @Test
+    public void shouldInitQueue() {
+
+        // when
+        linkLoaderJob.initQueue();
+
+        // then
+        verify(topicManager).get(isA(Integer.class), isA(Integer.class));
+    }
+
+    @Test
+    public void shouldNotInitQueue() {
+        // given
+        linkLoaderJob.queue.add(aTopic());
+
+        // when
+        linkLoaderJob.initQueue();
+
+        // then
+        verify(topicManager, never()).get(isA(Integer.class), isA(Integer.class));
     }
 }

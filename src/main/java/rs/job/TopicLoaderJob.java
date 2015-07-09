@@ -24,7 +24,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     @Autowired
     private SimpleManager<Topic> topicManager;
 
-    private Topic last;
+    Topic last;
 
     @Scheduled(initialDelay = 100, fixedRate = 609999999) //once a week, or during start
     public void initLast() {

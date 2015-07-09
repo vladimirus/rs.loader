@@ -7,7 +7,9 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rs.TestFactory.aTopic;
@@ -68,6 +70,28 @@ public class TopicLoaderJobTest {
 
         // then
         assertThat(actual, is(nullValue()));
+    }
+
+    @Test
+    public void shouldInitLast() {
+
+        // when
+        topicLoaderJob.initLast();
+
+        // then
+        verify(topicManager).get(isA(Integer.class), isA(Integer.class));
+    }
+
+    @Test
+    public void shouldNotInitLast() {
+        // given
+        topicLoaderJob.last = aTopic();
+
+        // when
+        topicLoaderJob.initLast();
+
+        // then
+        verify(topicManager, never()).get(isA(Integer.class), isA(Integer.class));
     }
 
 }
