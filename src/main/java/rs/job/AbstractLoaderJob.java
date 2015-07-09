@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 public abstract class AbstractLoaderJob<F, T> {
-    private Logger log = Logger.getLogger(AbstractLoaderJob.class);
+    Logger log = Logger.getLogger(AbstractLoaderJob.class);
 
     Collection<T> load(Stream<F> stream, Converter<F, T> converter, SimpleManager<T> manager) {
         return stream.map(original -> {

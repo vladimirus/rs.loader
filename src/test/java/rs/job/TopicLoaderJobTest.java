@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
@@ -92,6 +93,37 @@ public class TopicLoaderJobTest {
 
         // then
         verify(topicManager, never()).get(isA(Integer.class), isA(Integer.class));
+    }
+
+    @Test
+    public void shouldLoadWithSubreddit() {
+        // given
+        topicLoaderJob.last = aTopic();
+        Subreddit subreddit = mock(Subreddit.class);
+        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
+        given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
+
+        // when
+        topicLoaderJob.load();
+
+        // then
+        verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), isA(Subreddit.class), eq(null));
+    }
+
+    @Test
+    public void shouldNotLoadWithSubredditBecauseOfErrors() {
+        // given
+        topicLoaderJob.last = aTopic();
+        topicLoaderJob.numberOrErrorsInARow = 10;
+        Subreddit subreddit = mock(Subreddit.class);
+        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
+        given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
+
+        // when
+        topicLoaderJob.load();
+
+        // then
+        verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), eq(null), eq(null));
     }
 
 }

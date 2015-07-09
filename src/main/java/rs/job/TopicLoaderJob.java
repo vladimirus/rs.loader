@@ -25,6 +25,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     private SimpleManager<Topic> topicManager;
 
     Topic last;
+    int numberOrErrorsInARow;
 
     @Scheduled(initialDelay = 100, fixedRate = 609999999) //once a week, or during start
     public void initLast() {
@@ -38,7 +39,13 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     @Scheduled(initialDelay = 5000, fixedRate = 10000)
     public void load() {
-        last = getLast(load(subreddits.get(POPULAR, 0, 100, lastSubreddit(last), null).stream(), topicConverter, topicManager));
+        try {
+            last = getLast(load(subreddits.get(POPULAR, 0, 100, numberOrErrorsInARow < 10 ? lastSubreddit(last) : null, null).stream(), topicConverter, topicManager));
+            numberOrErrorsInARow = 0;
+        } catch (Exception e) {
+            log.error("Error retrieving subreddits", e);
+            numberOrErrorsInARow++;
+        }
     }
 
     @SuppressWarnings("unchecked")

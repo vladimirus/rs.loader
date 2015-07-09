@@ -30,7 +30,7 @@ public class TestFactory {
     }
 
     public static Topic aTopic() {
-        return  aTopic("id");
+        return  aTopic("t5_2qh33");
     }
 
     public static Topic aTopic(String id) {
