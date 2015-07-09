@@ -55,7 +55,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                 topic = queue.poll();
                 numberOrErrorsInARow = 0;
             } catch (Exception e) {
-                log.error("Error retrieving subreddits", e);
+                log.error("Error retrieving links, problem with topic: " + topic , e);
                 numberOrErrorsInARow++;
             }
         }
