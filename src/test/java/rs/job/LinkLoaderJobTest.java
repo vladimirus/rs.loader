@@ -55,7 +55,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoad() {
         // given
-        linkLoaderJob.queue.add(aTopic());
+        linkLoaderJob.topic = aTopic();
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission));
@@ -72,7 +72,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoadTwo() {
         // given
-        linkLoaderJob.queue.add(aTopic());
+        linkLoaderJob.topic = aTopic();
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission, submission));
