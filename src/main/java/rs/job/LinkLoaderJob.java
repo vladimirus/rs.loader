@@ -46,6 +46,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
         if (numberOrErrorsInARow > 10) {    //try X times then, change the topic
+            log.error("Error retrieving links, problem with topic: " + topic);
             topic = queue.poll();
         }
 
@@ -54,10 +55,11 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                 load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkManager);
                 topic = queue.poll();
                 numberOrErrorsInARow = 0;
-            } catch (Exception e) {
-                log.error("Error retrieving links, problem with topic: " + topic , e);
+            } catch (Exception ignore) {
                 numberOrErrorsInARow++;
             }
+        } else if (!queue.isEmpty()){
+            topic = queue.poll();
         }
     }
 

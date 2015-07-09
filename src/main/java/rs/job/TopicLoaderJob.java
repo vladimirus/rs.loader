@@ -40,10 +40,14 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     @Scheduled(initialDelay = 5000, fixedRate = 500)
     public void load() {
         try {
-            last = getLast(load(subreddits.get(POPULAR, 0, 100, numberOrErrorsInARow < 10 ? lastSubreddit(last) : null, null).stream(), topicConverter, topicManager));
+            if (numberOrErrorsInARow >= 10) {
+                log.error("Error retrieving subreddits, problem with last subreddit: " + last);
+                last = null;
+            }
+
+            last = getLast(load(subreddits.get(POPULAR, 0, 100, lastSubreddit(last), null).stream(), topicConverter, topicManager));
             numberOrErrorsInARow = 0;
-        } catch (Exception e) {
-            log.error("Error retrieving subreddits", e);
+        } catch (Exception ignore) {
             numberOrErrorsInARow++;
         }
     }
