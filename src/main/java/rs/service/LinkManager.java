@@ -18,7 +18,7 @@ public class LinkManager implements SimpleManager<Link> {
 
     @Override
     public void save(Link link) {
-        log.debug(format("Saving link: %s, topic: %s, score: %d, comments: %d", link.getUrl(), link.getTopic(), link.getScore(), link.getCommentCount()));
+        log.debug(format("Saving link: topic: %s, score: %d, comments: %d, url: %s", link.getTopic(), link.getScore(), link.getCommentCount(), link.getUrl()));
         linkDao.save(link);
     }
 
