@@ -18,7 +18,7 @@ import java.util.Date;
 @ToString
 @EqualsAndHashCode
 @Document(indexName = "test")
-public class Topic {
+public class Topic implements Model {
     @NonNull
     private String id;
     @NonNull

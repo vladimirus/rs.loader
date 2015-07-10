@@ -19,7 +19,7 @@ import java.util.Date;
 @ToString
 @EqualsAndHashCode
 @Document(indexName = "test")
-public class Link {
+public class Link implements Model {
     @NonNull
     private String id;
     @NonNull

@@ -12,8 +12,12 @@ public class TestFactory {
     }
 
     public static Link aLink() {
+        return aLink("id");
+    }
+
+    public static Link aLink(String id) {
         return Link.builder()
-                .id("id")
+                .id(id)
                 .title("title")
                 .url("http://url")
                 .commentsUrl("http://comments")

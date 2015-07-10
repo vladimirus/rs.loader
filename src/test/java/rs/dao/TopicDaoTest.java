@@ -1,6 +1,8 @@
 package rs.dao;
 
+import static java.util.Arrays.asList;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -46,5 +48,15 @@ public class TopicDaoTest {
 
         // then
         verify(template).queryForPage(isA(SearchQuery.class), isA(Class.class));
+    }
+
+    @Test
+    public void shouldSaveCollection() {
+
+        // when
+        topicDao.save(asList(aTopic("1"), aTopic("2")));
+
+        // then
+        verify(template).bulkIndex(any());
     }
 }
