@@ -2,7 +2,6 @@ package rs.job;
 
 import static com.github.jreddit.retrieval.params.SubredditsView.POPULAR;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.elasticsearch.common.collect.Iterables.getLast;
 
@@ -27,16 +26,14 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     @Autowired
     private LinkLoaderJob linkLoaderJob;
 
-    Topic lastProcessed;
     boolean sleeping;
 
     @Scheduled(initialDelay = 5000, fixedRate = 60000)
     public synchronized void load() {
         if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
             sleeping = false;
-            lastProcessed = process(ofNullable(lastProcessed).orElse(lastIndexedTopic()), 0, 100);
+            process(lastIndexedTopic(), 0, 100);
         } else {
-            lastProcessed = null;
             sleeping = true;
         }
     }

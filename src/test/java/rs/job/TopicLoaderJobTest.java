@@ -1,6 +1,7 @@
 package rs.job;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -77,10 +78,10 @@ public class TopicLoaderJobTest {
     @Test
     public void shouldLoadWithSubreddit() {
         // given
-        topicLoaderJob.lastProcessed = aTopic();
         Subreddit subreddit = mock(Subreddit.class);
         given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
+        given(topicManager.get(0, 1)).willReturn(singletonList(aTopic()));
 
         // when
         topicLoaderJob.load();
