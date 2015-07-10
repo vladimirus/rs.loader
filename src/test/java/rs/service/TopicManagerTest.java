@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.verify;
 import static rs.TestFactory.aTopic;
 
@@ -50,5 +51,16 @@ public class TopicManagerTest {
 
         // then
         assertThat(actual, hasSize(2));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSaveBulk() {
+
+        // when
+        topicManager.save(asList(aTopic("1"), aTopic("2")));
+
+        // then
+        verify(simpleDao).save(anyCollection());
     }
 }

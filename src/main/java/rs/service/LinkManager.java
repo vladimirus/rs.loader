@@ -1,7 +1,5 @@
 package rs.service;
 
-import static java.lang.String.format;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +16,12 @@ public class LinkManager implements SimpleManager<Link> {
 
     @Override
     public void save(Link link) {
-        if (log.isDebugEnabled()) {
-            log.debug(format("Saving link: topic: %s, score: %d, comments: %d, url: %s", link.getTopic(), link.getScore(), link.getCommentCount(), link.getUrl()));
-        }
         linkDao.save(link);
+    }
+
+    @Override
+    public void save(Collection<Link> collection) {
+        linkDao.save(collection);
     }
 
     @Override
