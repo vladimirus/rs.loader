@@ -15,6 +15,8 @@ import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
+import java.util.Collection;
+
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     @Autowired
@@ -48,7 +50,9 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
                 startTopic = null;
             }
             try {
-                return getLast(load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter, topicManager));
+                Collection<Topic> topics = load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
+                topicManager.save(topics);
+                return getLast(topics);
             } catch (Exception ignore) {
                 sleepUninterruptibly(1, SECONDS);
                 attemptsMade++;

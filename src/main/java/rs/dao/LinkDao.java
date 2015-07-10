@@ -12,7 +12,7 @@ import rs.model.Link;
 import java.util.Collection;
 
 @Repository
-public class LinkDao extends AbstractDao<Link> implements SimpleDao<Link> {
+public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
     private final static String TYPE = "link";
 
     @Override

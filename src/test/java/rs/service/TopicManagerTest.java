@@ -4,7 +4,9 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rs.TestFactory.aTopic;
 
@@ -61,6 +63,7 @@ public class TopicManagerTest {
         topicManager.save(asList(aTopic("1"), aTopic("2")));
 
         // then
-        verify(simpleDao).save(anyCollection());
+        verify(simpleDao).save(anyCollectionOf(Topic.class));
+        verify(eventBus, times(2)).post(isA(Topic.class));
     }
 }

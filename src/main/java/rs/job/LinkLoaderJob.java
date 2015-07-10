@@ -49,7 +49,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
             int numberOrErrorsInARow = 0;
             while(numberOrErrorsInARow < 100) {
                 try {
-                    load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkManager);
+                    linkManager.save(load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter));
                     numberOrErrorsInARow = Integer.MAX_VALUE; //in other words exit
                 } catch (Exception ignore) {
                     sleepUninterruptibly(1, SECONDS);

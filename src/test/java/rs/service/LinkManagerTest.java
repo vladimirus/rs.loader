@@ -4,7 +4,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Mockito.verify;
 import static rs.TestFactory.aLink;
 
@@ -49,7 +49,6 @@ public class LinkManagerTest {
         assertThat(actual, hasSize(2));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldSaveBulk() {
 
@@ -57,6 +56,6 @@ public class LinkManagerTest {
         linkManager.save(asList(aLink("1"), aLink("2")));
 
         // then
-        verify(simpleDao).save(anyCollection());
+        verify(simpleDao).save(anyCollectionOf(Link.class));
     }
 }

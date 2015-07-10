@@ -12,7 +12,7 @@ import rs.model.Model;
 import java.util.Collection;
 
 @Repository
-public abstract class AbstractDao<T extends Model> {
+public abstract class ModelDao<T extends Model> {
     final static String INDEX_NAME = "rs";
 
     @Autowired

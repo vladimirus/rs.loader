@@ -14,7 +14,7 @@ import rs.model.Topic;
 import java.util.Collection;
 
 @Repository
-public class TopicDao extends AbstractDao<Topic> implements SimpleDao<Topic> {
+public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
     private final static String TYPE = "topic";
 
     @Override
