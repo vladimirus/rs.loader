@@ -3,7 +3,6 @@ package rs.job;
 import static com.github.jreddit.retrieval.params.SubredditsView.POPULAR;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.elasticsearch.common.collect.Iterables.getLast;
 
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Service;
 import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
-
-import java.util.Collection;
 
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
@@ -44,21 +41,19 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
         return !(queueSize >= 10000 || (queueSize > 10 && currentlySleeping));
     }
 
-    Topic process(Topic startTopic, int attemptsMade, int maxAttempts) {
+    void process(Topic startTopic, int attemptsMade, int maxAttempts) {
         while(attemptsMade < maxAttempts) {
             if (attemptsMade > maxAttempts - 10) {   //after 90 attempts, we couldn't get subreddit, so start from 0
                 startTopic = null;
             }
             try {
-                Collection<Topic> topics = load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
-                topicManager.save(topics);
-                return getLast(topics);
+                topicManager.save(load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter));
+                break;
             } catch (Exception ignore) {
                 sleepUninterruptibly(1, SECONDS);
                 attemptsMade++;
             }
         }
-        return null;
     }
 
     @SuppressWarnings("unchecked")

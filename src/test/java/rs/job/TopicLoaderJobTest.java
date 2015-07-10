@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
@@ -52,7 +53,7 @@ public class TopicLoaderJobTest {
 
         // then
         verify(topicConverter, times(2)).convert(any(Subreddit.class));
-        verify(topicManager, times(2)).save(any(Topic.class));
+        verify(topicManager).save(anyCollectionOf(Topic.class));
     }
 
     @Test
