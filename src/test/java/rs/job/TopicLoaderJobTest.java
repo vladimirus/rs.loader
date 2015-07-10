@@ -10,7 +10,6 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rs.TestFactory.aTopic;
@@ -37,6 +36,8 @@ public class TopicLoaderJobTest {
     private Converter<Subreddit, Topic> topicConverter;
     @Mock
     private SimpleManager<Topic> topicManager;
+    @Mock
+    private LinkLoaderJob linkLoaderJob;
 
     @Test
     public void shouldLoad() {
@@ -74,31 +75,9 @@ public class TopicLoaderJobTest {
     }
 
     @Test
-    public void shouldInitLast() {
-
-        // when
-        topicLoaderJob.initLast();
-
-        // then
-        verify(topicManager).get(isA(Integer.class), isA(Integer.class));
-    }
-
-    @Test
-    public void shouldNotInitLast() {
-        // given
-        topicLoaderJob.last = aTopic();
-
-        // when
-        topicLoaderJob.initLast();
-
-        // then
-        verify(topicManager, never()).get(isA(Integer.class), isA(Integer.class));
-    }
-
-    @Test
     public void shouldLoadWithSubreddit() {
         // given
-        topicLoaderJob.last = aTopic();
+        topicLoaderJob.lastProcessed = aTopic();
         Subreddit subreddit = mock(Subreddit.class);
         given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
@@ -113,17 +92,53 @@ public class TopicLoaderJobTest {
     @Test
     public void shouldNotLoadWithSubredditBecauseOfErrors() {
         // given
-        topicLoaderJob.last = aTopic();
-        topicLoaderJob.numberOrErrorsInARow = 10;
-        Subreddit subreddit = mock(Subreddit.class);
-        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
+        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willThrow(new RuntimeException("test"));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
 
         // when
-        topicLoaderJob.load();
+        topicLoaderJob.process(aTopic(), 0, 1);
 
         // then
         verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), eq(null), eq(null));
     }
 
+    @Test
+    public void shouldBeReadyToRun() {
+
+        // when
+        boolean actual = topicLoaderJob.readyToRun(100, false);
+
+        // then
+        assertThat(actual, is(true));
+    }
+
+    @Test
+    public void shouldNotBeReadyBecauseSleeping() {
+
+        // when
+        boolean actual = topicLoaderJob.readyToRun(100, true);
+
+        // then
+        assertThat(actual, is(false));
+    }
+
+    @Test
+    public void shouldBeReadyToRunAfterSleep() {
+
+        // when
+        boolean actual = topicLoaderJob.readyToRun(10, true);
+
+        // then
+        assertThat(actual, is(true));
+    }
+
+    @Test
+    public void shouldNotBeReadyToRun() {
+
+        // when
+        boolean actual = topicLoaderJob.readyToRun(10000, false);
+
+        // then
+        assertThat(actual, is(false));
+    }
 }

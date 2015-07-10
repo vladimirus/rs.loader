@@ -63,4 +63,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     public void handle(Topic topic) {
         queue.add(topic);
     }
+
+    public int getQueueSize() {
+        return queue.size();
+    }
 }
