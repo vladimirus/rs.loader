@@ -1,5 +1,9 @@
 package rs.job;
 
+import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.google.common.eventbus.Subscribe;
@@ -15,10 +19,6 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
-import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Autowired
@@ -30,7 +30,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Autowired
     private SimpleManager<Topic> topicManager;
 
-    Queue<Topic> queue = new LinkedBlockingQueue<>(1000);
+    Queue<Topic> queue = new LinkedBlockingQueue<>();
 
     @Scheduled(initialDelay = 500, fixedRate = 609999999) //once a week, or during start
     public void initQueue() {
