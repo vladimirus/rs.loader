@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import rs.model.Model;
 
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public abstract class ModelDao<T extends Model> {
@@ -23,10 +24,13 @@ public abstract class ModelDao<T extends Model> {
     }
 
     void save(Collection<T> collection, String index, String type) {
-        template.bulkIndex(
-                collection.stream()
-                        .map(item -> indexQuery(item, index, type))
-                        .collect(toList()));
+        List<IndexQuery> queries = collection.stream()
+                .map(item -> indexQuery(item, index, type))
+                .collect(toList());
+
+        if (!queries.isEmpty()) {
+            template.bulkIndex(queries);
+        }
     }
 
     IndexQuery indexQuery(T item, String index, String type) {
