@@ -27,7 +27,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     boolean sleeping;
 
-    @Scheduled(initialDelay = 5000, fixedRate = 10000)
+    @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public synchronized void load() {
         if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
             sleeping = false;

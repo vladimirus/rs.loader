@@ -7,6 +7,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.google.common.eventbus.Subscribe;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
+    private Logger log = Logger.getLogger(LinkLoaderJob.class);
     @Autowired
     private Submissions submissions;
     @Autowired
@@ -32,7 +34,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
 
     Queue<Topic> queue = new LinkedBlockingQueue<>();
 
-    @Scheduled(initialDelay = 500, fixedRate = 609999999) //once a week, or during start
+    @Scheduled(initialDelay = 3000, fixedRate = 609999999) //once a week, or during start
     public void initQueue() {
         if (queue.isEmpty()) {
             Collection<Topic> topics = topicManager.get(0, 1000);
@@ -56,6 +58,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                     numberOrErrorsInARow++;
                 }
             }
+        } else {
+            log.info("Link queue is empty, utilise it more?");
         }
     }
 
