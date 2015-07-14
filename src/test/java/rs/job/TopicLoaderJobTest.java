@@ -19,6 +19,7 @@ import static rs.TestFactory.aTopic;
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
 import com.github.jreddit.retrieval.params.SubredditsView;
+import com.google.common.eventbus.AsyncEventBus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,6 +41,8 @@ public class TopicLoaderJobTest {
     private SimpleManager<Topic> topicManager;
     @Mock
     private LinkLoaderJob linkLoaderJob;
+    @Mock
+    private AsyncEventBus eventBus;
 
     @Test
     public void shouldLoad() {
@@ -54,6 +57,7 @@ public class TopicLoaderJobTest {
         // then
         verify(topicConverter, times(2)).convert(any(Subreddit.class));
         verify(topicManager).save(anyCollectionOf(Topic.class));
+        verify(eventBus, times(2)).post(isA(Topic.class));
     }
 
     @Test

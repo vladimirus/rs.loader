@@ -6,6 +6,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
+import com.google.common.eventbus.AsyncEventBus;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
+
+import java.util.Collection;
 
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
@@ -24,6 +27,8 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     private SimpleManager<Topic> topicManager;
     @Autowired
     private LinkLoaderJob linkLoaderJob;
+    @Autowired
+    private AsyncEventBus eventBus;
 
     boolean sleeping;
 
@@ -47,7 +52,9 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
                 startTopic = null;
             }
             try {
-                topicManager.save(load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter));
+                Collection<Topic> topics = load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
+                topicManager.save(topics);
+                topics.stream().forEach(eventBus::post);
                 break;
             } catch (Exception ignore) {
                 sleepUninterruptibly(1, SECONDS);

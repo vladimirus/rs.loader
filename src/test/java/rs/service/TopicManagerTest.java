@@ -5,12 +5,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyCollectionOf;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rs.TestFactory.aTopic;
 
-import com.google.common.eventbus.AsyncEventBus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,8 +24,6 @@ public class TopicManagerTest {
     private TopicManager topicManager;
     @Mock
     private SimpleDao<Topic> simpleDao;
-    @Mock
-    private AsyncEventBus eventBus;
 
     @Test
     public void shouldSave() {
@@ -40,7 +35,6 @@ public class TopicManagerTest {
 
         // then
         verify(simpleDao).save(topic);
-        verify(eventBus).post(topic);
     }
 
     @Test
@@ -64,6 +58,5 @@ public class TopicManagerTest {
 
         // then
         verify(simpleDao).save(anyCollectionOf(Topic.class));
-        verify(eventBus, times(2)).post(isA(Topic.class));
     }
 }
