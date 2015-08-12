@@ -34,7 +34,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.zalando.stups:spring-boot-starter-guava-eventbus:0.5.3")
-    compile("com.github.jreddit:jreddit:1.0.4")
+    compile("com.github.jreddit:jreddit:1.0.3")
     compile("org.projectlombok:lombok:1.16.4")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
