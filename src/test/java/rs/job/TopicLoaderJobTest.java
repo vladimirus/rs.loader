@@ -130,7 +130,7 @@ public class TopicLoaderJobTest {
     public void shouldNotBeReadyBecauseSleeping() {
 
         // when
-        boolean actual = topicLoaderJob.readyToRun(100, true);
+        boolean actual = topicLoaderJob.readyToRun(101, true);
 
         // then
         assertThat(actual, is(false));

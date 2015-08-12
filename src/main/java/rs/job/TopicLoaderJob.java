@@ -43,7 +43,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     }
 
     boolean readyToRun(int queueSize, boolean currentlySleeping) {
-        return !(queueSize >= 10000 || (queueSize > 10 && currentlySleeping));
+        return !(queueSize >= 10000 || (queueSize > 100 && currentlySleeping));
     }
 
     void process(Topic startTopic, int attemptsMade, int maxAttempts) {
