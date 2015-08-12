@@ -9,9 +9,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rs.TestFactory.aTopic;
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.boot.actuate.metrics.CounterService;
 import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
@@ -43,6 +46,8 @@ public class TopicLoaderJobTest {
     private LinkLoaderJob linkLoaderJob;
     @Mock
     private AsyncEventBus eventBus;
+    @Mock
+    private CounterService counterService;
 
     @Test
     public void shouldLoad() {
@@ -58,6 +63,7 @@ public class TopicLoaderJobTest {
         verify(topicConverter, times(2)).convert(any(Subreddit.class));
         verify(topicManager).save(anyCollectionOf(Topic.class));
         verify(eventBus, times(2)).post(isA(Topic.class));
+        verify(counterService, times(2)).increment(anyString());
     }
 
     @Test
@@ -93,6 +99,7 @@ public class TopicLoaderJobTest {
 
         // then
         verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), isA(Subreddit.class), eq(null));
+        verify(counterService, times(2)).increment(anyString());
     }
 
     @Test
@@ -106,6 +113,7 @@ public class TopicLoaderJobTest {
 
         // then
         verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), eq(null), eq(null));
+        verify(counterService, never()).increment(anyString());
     }
 
     @Test

@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.boot.actuate.metrics.CounterService;
 import rs.model.Link;
 import rs.model.Topic;
 import rs.service.SimpleManager;
@@ -41,6 +42,8 @@ public class LinkLoaderJobTest {
     private SimpleManager<Link> linkManager;
     @Mock
     private SimpleManager<Topic> topicManager;
+    @Mock
+    private CounterService counterService;
 
     @Test
     public void shouldNotLoadWhenNoTopics() {
@@ -51,6 +54,7 @@ public class LinkLoaderJobTest {
         // then
         verify(linkConverter, never()).convert(any(Submission.class));
         verify(linkManager, never()).save(any(Link.class));
+        verify(counterService, never()).increment(anyString());
     }
 
     @SuppressWarnings("unchecked")
@@ -69,6 +73,7 @@ public class LinkLoaderJobTest {
         // then
         verify(linkConverter, times(2)).convert(any(Submission.class));
         verify(linkManager).save(anyCollectionOf(Link.class));
+        verify(counterService, times(2)).increment(anyString());
     }
 
     @Test
@@ -89,6 +94,7 @@ public class LinkLoaderJobTest {
         // then
         verify(linkConverter, times(3)).convert(any(Submission.class));
         verify(linkManager).save(anyCollectionOf(Link.class));
+        verify(counterService, times(2)).increment(anyString());
     }
 
     @Test
