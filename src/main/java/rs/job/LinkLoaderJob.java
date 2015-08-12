@@ -9,6 +9,7 @@ import com.github.jreddit.retrieval.Submissions;
 import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.model.Link;
@@ -31,6 +32,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private SimpleManager<Link> linkManager;
     @Autowired
     private SimpleManager<Topic> topicManager;
+    @Autowired
+    private GaugeService gaugeService;
 
     Queue<Topic> queue = new LinkedList<>();
 
@@ -46,6 +49,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
 
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
+        gaugeService.submit("loader.link.queue-size", getQueueSize());
         Topic topic = queue.poll();
         if (topic != null) {
             int numberOrErrorsInARow = 0;
