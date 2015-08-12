@@ -17,8 +17,8 @@ import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
@@ -32,7 +32,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Autowired
     private SimpleManager<Topic> topicManager;
 
-    Queue<Topic> queue = new LinkedBlockingQueue<>();
+    Queue<Topic> queue = new LinkedList<>();
 
     @Scheduled(initialDelay = 3000, fixedRate = 609999999) //once a week, or during start
     public void initQueue() {
