@@ -11,7 +11,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import rs.service.utils.RsRestResponseHandler;
+import rs.service.utils.RetryRestResponseHandler;
 
 @Configuration
 public class RsConfig {
@@ -37,7 +37,7 @@ public class RsConfig {
 
     @Bean
     public RestClient redditClient() {
-        return new HttpRestClient(httpClient(requestConfig()), new RsRestResponseHandler());
+        return new HttpRestClient(httpClient(requestConfig()), new RetryRestResponseHandler());
     }
 
     @Bean

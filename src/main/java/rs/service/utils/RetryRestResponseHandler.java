@@ -1,6 +1,8 @@
 package rs.service.utils;
 
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
 import com.github.jreddit.utils.restclient.Response;
@@ -15,23 +17,30 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class RsRestResponseHandler implements ResponseHandler<Response> {
-    private Logger log = Logger.getLogger(RsRestResponseHandler.class);
+public class RetryRestResponseHandler implements ResponseHandler<Response> {
+    private Logger log = Logger.getLogger(RetryRestResponseHandler.class);
     private final JSONParser jsonParser;
 
-    public RsRestResponseHandler() {
+    public RetryRestResponseHandler() {
         this.jsonParser = new JSONParser();
     }
 
     @Override
     public Response handleResponse(HttpResponse response) throws IOException {
-        String responseStr = null;
+        return handleResponse(content(response), response, 0);
+    }
+
+    public Response handleResponse(String responseStr, HttpResponse response, Integer errorCount) {
         try {
-            responseStr = content(response);
             return parse(responseStr, response);
-        } catch (ParseException e) {
-            log.error("Error parsing response from Reddit", e);
-            log.error("Response was " + responseStr, e);
+        } catch (Exception e) {
+            if (errorCount < 10) {
+                sleepUninterruptibly(6, SECONDS);
+                return handleResponse(responseStr, response, errorCount + 1);
+            } else {
+                log.error("Error parsing response from Reddit", e);
+                log.error("Response was " + responseStr);
+            }
         }
         return null;
     }
