@@ -35,7 +35,7 @@ public class RetryRestResponseHandler implements ResponseHandler<Response> {
             return parse(responseStr, response);
         } catch (Throwable e) {
             if (errorCount < 10) {
-                log.error(String.format("Error parsing trying again, count: %d", errorCount));
+                log.info(String.format("Error parsing trying again, count: %d", errorCount));
                 sleepUninterruptibly(6, SECONDS);
                 return handleResponse(responseStr, response, errorCount + 1);
             } else {
