@@ -25,21 +25,26 @@ public class RsRestResponseHandler implements ResponseHandler<Response> {
 
     @Override
     public Response handleResponse(HttpResponse response) throws IOException {
+        String responseStr = null;
         try {
-            return parse(response);
+            responseStr = content(response);
+            return parse(responseStr, response);
         } catch (ParseException e) {
             log.error("Error parsing response from Reddit", e);
+            log.error("Response was " + responseStr, e);
         }
         return null;
     }
 
-    private Response parse(HttpResponse httpResponse) throws IOException, ParseException {
+    private Response parse(String content, HttpResponse response) throws ParseException {
+        return new RestResponse(content, jsonParser.parse(content), response);
+    }
+
+    private String content(HttpResponse response) throws IOException {
         InputStream responseStream = null;
         try {
-            responseStream = httpResponse.getEntity().getContent();
-            String content = IOUtils.toString(responseStream, "UTF-8");
-            Object responseObject = jsonParser.parse(content);
-            return new RestResponse(content, responseObject, httpResponse);
+            responseStream = response.getEntity().getContent();
+            return IOUtils.toString(responseStream, "UTF-8");
         } finally {
             closeQuietly(responseStream);
         }
