@@ -5,13 +5,13 @@ import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.Subreddits;
 import com.github.jreddit.utils.restclient.HttpRestClient;
 import com.github.jreddit.utils.restclient.RestClient;
-import com.github.jreddit.utils.restclient.RestResponseHandler;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import rs.service.utils.RsRestResponseHandler;
 
 @Configuration
 public class RsConfig {
@@ -37,7 +37,7 @@ public class RsConfig {
 
     @Bean
     public RestClient redditClient() {
-        return new HttpRestClient(httpClient(requestConfig()), new RestResponseHandler());
+        return new HttpRestClient(httpClient(requestConfig()), new RsRestResponseHandler());
     }
 
     @Bean
