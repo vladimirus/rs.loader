@@ -28,10 +28,10 @@ public class RetryRestResponseHandler implements ResponseHandler<Response> {
         try {
             return new RestResponse(content, new JSONParser().parse(content), response);
         } catch (Throwable e) {
-            log.error("Error parsing response. Sleeping for 30 seconds...");
+            log.error("Error parsing response. Sleeping for 10 seconds...");
 //            log.error("Error parsing response", e);
 //            log.error("Response was " + responseStr);
-            sleepUninterruptibly(30, SECONDS); //slow down
+            sleepUninterruptibly(10, SECONDS); //slow down
         }
         return null;
     }
