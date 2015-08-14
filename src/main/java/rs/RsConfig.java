@@ -31,13 +31,20 @@ public class RsConfig {
     public HttpClient httpClient(RequestConfig config) {
         return HttpClients.custom()
                 .setDefaultRequestConfig(config)
-                .setUserAgent("rs client yo!")
+                .setUserAgent(userAgent())
                 .build();
     }
 
     @Bean
     public RestClient redditClient() {
-        return new HttpRestClient(httpClient(requestConfig()), new RetryRestResponseHandler());
+        HttpRestClient client = new HttpRestClient(httpClient(requestConfig()), new RetryRestResponseHandler());
+        client.setUserAgent(userAgent());
+        return client;
+    }
+
+    @Bean
+    private String userAgent() {
+        return "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0";
     }
 
     @Bean
