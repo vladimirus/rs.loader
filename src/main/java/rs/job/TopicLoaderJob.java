@@ -53,9 +53,11 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
             }
             try {
                 Collection<Topic> topics = load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
-                topicManager.save(topics);
-                topics.stream().forEach(eventBus::post);
-                break;
+                if (!topics.isEmpty()) {
+                    topicManager.save(topics);
+                    topics.stream().forEach(eventBus::post);
+                    break;
+                }
             } catch (Exception ignore) {
                 sleepUninterruptibly(1, SECONDS);
                 attemptsMade++;
