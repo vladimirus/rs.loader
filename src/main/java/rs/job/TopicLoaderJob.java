@@ -17,8 +17,8 @@ import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -41,7 +41,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     public synchronized void load() {
         if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
             sleeping = false;
-            Optional<Collection<Topic>> optionalTopics = process(lastIndexedTopic(), 90);
+            Optional<Collection<Topic>> optionalTopics = process(lastIndexedTopic(), 10);
 
             optionalTopics.ifPresent(topics -> {
                 topicManager.save(topics);
@@ -49,7 +49,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
             });
 
             if (!optionalTopics.isPresent()) {
-                process(Optional.<Topic>empty(), 10);
+                process(Optional.<Topic>empty(), 5);
             }
         } else {
             sleeping = true;
@@ -68,7 +68,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
                     } catch (Exception ignore) {
                         log.info(String.format("Error retrieving topic. Trying again, iteration: %d, topic: %s", i, startTopic));
                         sleepUninterruptibly(2, SECONDS);
-                        return new ArrayList<Topic>(0);
+                        return Collections.<Topic>emptyList();
                     }
                 })
                 .filter(topics -> !topics.isEmpty())

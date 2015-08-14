@@ -2,7 +2,6 @@ package rs.job;
 
 import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static java.util.Collections.EMPTY_LIST;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.IntStream.rangeClosed;
@@ -59,17 +58,17 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
             log.info("Link queue is empty, utilise it more?");
         }
 
-        topicOptional.ifPresent(topic -> rangeClosed(1, 100)
+        topicOptional.ifPresent(topic -> rangeClosed(1, 10)
                 .mapToObj(i -> {
                     try {
                         return load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter);
                     } catch (Exception ignore) {
                         log.info(String.format("Error retrieving links. Trying again, iteration: %d, topic: %s", i, topic.getDisplayName()));
                         sleepUninterruptibly(10, SECONDS);
-                        return EMPTY_LIST;
+                        return null;
                     }
                 })
-                .filter(links -> !links.isEmpty())
+                .filter(links -> links != null)
                 .findAny()
                 .ifPresent(linkManager::save));
     }
