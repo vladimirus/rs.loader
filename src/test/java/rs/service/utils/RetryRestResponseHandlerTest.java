@@ -2,6 +2,7 @@ package rs.service.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -19,6 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetryRestResponseHandlerTest {
@@ -32,14 +34,31 @@ public class RetryRestResponseHandlerTest {
         // given
         HttpEntity entity = mock(HttpEntity.class);
         given(response.getEntity()).willReturn(entity);
-        given(entity.getContent()).willReturn(fixture("subreddits.json"));
+        given(entity.getContent()).willReturn(fixture("subreddits-01.json"));
 
         // when
         Response actual = retryRestResponseHandler.handleResponse(response);
 
         // then
         assertThat(actual, notNullValue());
+    }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldHandleResponseWithMoreContent() throws Exception {
+        // given
+        HttpEntity entity = mock(HttpEntity.class);
+        given(response.getEntity()).willReturn(entity);
+        given(entity.getContent()).willReturn(fixture("subreddits-02.json"));
+
+        // when
+        Response actual = retryRestResponseHandler.handleResponse(response);
+        Map<String, Object> actualMap = (Map<String, Object>) actual.getResponseObject();
+
+        // then
+        assertThat(actual, notNullValue());
+        assertThat(actualMap.get("data"), notNullValue());
+        assertThat(actualMap.get("kind"), is("Listing"));
     }
 
     @SneakyThrows
