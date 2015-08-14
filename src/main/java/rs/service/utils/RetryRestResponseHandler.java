@@ -19,11 +19,6 @@ import java.io.InputStream;
 
 public class RetryRestResponseHandler implements ResponseHandler<Response> {
     private Logger log = Logger.getLogger(RetryRestResponseHandler.class);
-    private final JSONParser jsonParser;
-
-    public RetryRestResponseHandler() {
-        this.jsonParser = new JSONParser();
-    }
 
     @Override
     public Response handleResponse(HttpResponse response) throws IOException {
@@ -47,7 +42,7 @@ public class RetryRestResponseHandler implements ResponseHandler<Response> {
     }
 
     private Response parse(String content, HttpResponse response) throws ParseException {
-        return new RestResponse(content, jsonParser.parse(content), response);
+        return new RestResponse(content, new JSONParser().parse(content), response);
     }
 
     private String content(HttpResponse response) throws IOException {
