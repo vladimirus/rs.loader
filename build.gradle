@@ -28,10 +28,14 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.zalando.stups:spring-boot-starter-guava-eventbus:0.5.3")
     compile("com.github.jreddit:jreddit:1.0.3")
