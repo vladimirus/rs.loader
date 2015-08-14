@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 public abstract class AbstractLoaderJob<F, T> {
-    Logger log = Logger.getLogger(AbstractLoaderJob.class);
+    private Logger log = Logger.getLogger(AbstractLoaderJob.class);
 
     private LocalDateTime lastProcessed = now();
     @Autowired

@@ -8,6 +8,7 @@ import static java.util.stream.IntStream.rangeClosed;
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
 import com.google.common.eventbus.AsyncEventBus;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
+    private Logger log = Logger.getLogger(TopicLoaderJob.class);
     @Autowired
     private Subreddits subreddits;
     @Autowired
