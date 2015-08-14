@@ -3,6 +3,7 @@ package rs.job;
 import static com.github.jreddit.retrieval.params.SubredditsView.POPULAR;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.IntStream.rangeClosed;
 
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
@@ -15,7 +16,9 @@ import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
@@ -36,7 +39,16 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     public synchronized void load() {
         if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
             sleeping = false;
-            process(lastIndexedTopic(), 0, 100);
+            Optional<Collection<Topic>> optionalTopics = process(lastIndexedTopic(), 90);
+
+            optionalTopics.ifPresent(topics -> {
+                topicManager.save(topics);
+                topics.stream().forEach(eventBus::post);
+            });
+
+            if (!optionalTopics.isPresent()) {
+                process(Optional.<Topic>empty(), 10);
+            }
         } else {
             sleeping = true;
         }
@@ -46,32 +58,28 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
         return !(queueSize >= 10000 || (queueSize > 100 && currentlySleeping));
     }
 
-    void process(Topic startTopic, int attemptsMade, int maxAttempts) {
-        while(attemptsMade < maxAttempts) {
-            if (attemptsMade > maxAttempts - 10) {   //after 90 attempts, we couldn't get subreddit, so start from 0
-                startTopic = null;
-            }
-            try {
-                Collection<Topic> topics = load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
-                if (!topics.isEmpty()) {
-                    topicManager.save(topics);
-                    topics.stream().forEach(eventBus::post);
-                    break;
-                }
-            } catch (Exception ignore) {
-                sleepUninterruptibly(1, SECONDS);
-                attemptsMade++;
-            }
-        }
+    Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
+        return rangeClosed(1, maxAttempts)
+                .mapToObj(i -> {
+                    try {
+                        return load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
+                    } catch (Exception ignore) {
+                        log.info(String.format("Error retrieving topic. Trying again, iteration: %d, topic: %s", i, startTopic));
+                        sleepUninterruptibly(2, SECONDS);
+                        return new ArrayList<Topic>(0);
+                    }
+                })
+                .filter(topics -> !topics.isEmpty())
+                .findAny();
     }
 
     @SuppressWarnings("unchecked")
-    Subreddit lastSubreddit(Topic lastCheckedTopic) {
+    Subreddit lastSubreddit(Optional<Topic> lastCheckedTopic) {
         Subreddit subreddit = null;
 
-        if (lastCheckedTopic != null) {
+        if (lastCheckedTopic.isPresent()) {
             JSONObject json = new JSONObject();
-            json.put("name", lastCheckedTopic.getId());
+            json.put("name", lastCheckedTopic.get().getId());
             json.put("created", 1.0);
             json.put("created_utc", 1.0);
             json.put("subscribers", 1L);
@@ -81,10 +89,9 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
         return subreddit;
     }
 
-    private Topic lastIndexedTopic() {
+    private Optional<Topic> lastIndexedTopic() {
         return topicManager.get(0, 1)
                 .stream()
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 }

@@ -32,6 +32,9 @@ import rs.model.Topic;
 import rs.service.SimpleManager;
 import rs.service.convert.Converter;
 
+import java.util.Collection;
+import java.util.Optional;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TopicLoaderJobTest {
     @InjectMocks
@@ -70,7 +73,7 @@ public class TopicLoaderJobTest {
     public void shouldGetLast() {
 
         // when
-        Subreddit actual = topicLoaderJob.lastSubreddit(aTopic("t5_2qh33"));
+        Subreddit actual = topicLoaderJob.lastSubreddit(Optional.of(aTopic("t5_2qh33")));
 
         // then
         assertThat(actual.getFullName(), is("t5_2qh33"));
@@ -80,7 +83,7 @@ public class TopicLoaderJobTest {
     public void shouldNotGetLast() {
 
         // when
-        Subreddit actual = topicLoaderJob.lastSubreddit(null);
+        Subreddit actual = topicLoaderJob.lastSubreddit(Optional.<Topic>empty());
 
         // then
         assertThat(actual, is(nullValue()));
@@ -109,10 +112,11 @@ public class TopicLoaderJobTest {
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
 
         // when
-        topicLoaderJob.process(aTopic(), 0, 1);
+        Optional<Collection<Topic>> actual = topicLoaderJob.process(Optional.of(aTopic()), 1);
 
         // then
-        verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), eq(null), eq(null));
+        assertThat(actual.isPresent(), is(false));
+        verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null));
         verify(counterService, never()).increment(anyString());
     }
 
