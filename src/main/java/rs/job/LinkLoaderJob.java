@@ -2,7 +2,10 @@ package rs.job;
 
 import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.Collections.EMPTY_LIST;
+import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.IntStream.range;
 
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
@@ -19,6 +22,7 @@ import rs.service.convert.Converter;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Queue;
 
 @Service
@@ -50,24 +54,23 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
         gaugeService.submit("loader.link.queue-size", getQueueSize());
-        Topic topic = queue.poll();
-        if (topic != null) {
-            int numberOrErrorsInARow = 0;
-            while(numberOrErrorsInARow < 100) {
-                try {
-                    Collection<Link> links = load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter);
-                    if (!links.isEmpty()) {
-                        linkManager.save(links);
-                        numberOrErrorsInARow = Integer.MAX_VALUE; //in other words exit
-                    }
-                } catch (Exception ignore) {
-                    sleepUninterruptibly(1, SECONDS);
-                    numberOrErrorsInARow++;
-                }
-            }
-        } else {
+        Optional<Topic> topicOptional = ofNullable(queue.poll());
+        if(!topicOptional.isPresent()) {
             log.info("Link queue is empty, utilise it more?");
         }
+
+        topicOptional.ifPresent(topic -> range(0, 100)
+                .mapToObj(i -> {
+                    try {
+                        return load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter);
+                    } catch (Exception ignore) {
+                        sleepUninterruptibly(10, SECONDS);
+                        return EMPTY_LIST;
+                    }
+                })
+                .filter(links -> !links.isEmpty())
+                .findAny()
+                .ifPresent(linkManager::save));
     }
 
     @Subscribe
