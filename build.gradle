@@ -57,8 +57,8 @@ task wrapper(type: Wrapper) {
 }
 
 test {
-    exclude 'rs/integration/**'
+    exclude 'rs/loader/integration/**'
 }
 task intTest(type: Test) {
-    include 'rs/integration/**'
+    include 'rs/loader/integration/**'
 }
