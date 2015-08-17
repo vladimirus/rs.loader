@@ -65,9 +65,9 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-                        return load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
+                        return load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic).orElse(null), null).stream(), topicConverter);
                     } catch (Exception ignore) {
-                        log.info(format("Error retrieving topic. Trying again, iteration: %d, topic: %s", i, startTopic));
+                        log.info(format("Error retrieving topics. Trying again, iteration: %d, topic: %s", i, startTopic));
                         sleepUninterruptibly(2, SECONDS);
                         return Collections.<Topic>emptyList();
                     }
@@ -77,8 +77,8 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     }
 
     @SuppressWarnings("unchecked")
-    Subreddit lastSubreddit(Optional<Topic> lastCheckedTopic) {
-        Subreddit subreddit = null;
+    Optional<Subreddit> lastSubreddit(Optional<Topic> lastCheckedTopic) {
+        Optional<Subreddit> subreddit = Optional.empty();
 
         if (lastCheckedTopic.isPresent()) {
             JSONObject json = new JSONObject();
@@ -86,7 +86,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
             json.put("created", 1.0);
             json.put("created_utc", 1.0);
             json.put("subscribers", 1L);
-            subreddit = new Subreddit(json);
+            subreddit = Optional.of(new Subreddit(json));
         }
 
         return subreddit;

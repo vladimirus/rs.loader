@@ -4,7 +4,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyCollectionOf;
@@ -73,20 +72,20 @@ public class TopicLoaderJobTest {
     public void shouldGetLast() {
 
         // when
-        Subreddit actual = topicLoaderJob.lastSubreddit(Optional.of(aTopic("t5_2qh33")));
+        Optional<Subreddit> actual = topicLoaderJob.lastSubreddit(Optional.of(aTopic("t5_2qh33")));
 
         // then
-        assertThat(actual.getFullName(), is("t5_2qh33"));
+        assertThat(actual.get().getFullName(), is("t5_2qh33"));
     }
 
     @Test
     public void shouldNotGetLast() {
 
         // when
-        Subreddit actual = topicLoaderJob.lastSubreddit(Optional.<Topic>empty());
+        Optional<Subreddit> actual = topicLoaderJob.lastSubreddit(Optional.<Topic>empty());
 
         // then
-        assertThat(actual, is(nullValue()));
+        assertThat(actual.isPresent(), is(false));
     }
 
     @Test
