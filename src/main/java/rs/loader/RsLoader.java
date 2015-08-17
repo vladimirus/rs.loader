@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableAutoConfiguration
 @SpringBootApplication
-public class RsLoader1 {
+public class RsLoader {
 
     public static void main(String[] args) {
-        SpringApplication.run(RsLoader1.class, args);
+        SpringApplication.run(RsLoader.class, args);
     }
 }
