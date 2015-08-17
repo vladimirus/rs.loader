@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import rs.loader.model.Topic;
 import rs.loader.service.SimpleManager;
 import rs.loader.service.convert.Converter;
+import rs.loader.service.validator.Validator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +30,8 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     private Subreddits subreddits;
     @Autowired
     private Converter<Subreddit, Topic> topicConverter;
+    @Autowired
+    private Validator<Topic> topicValidator;
     @Autowired
     private SimpleManager<Topic> topicManager;
     @Autowired
@@ -65,7 +68,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-                        return load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic).orElse(null), null).stream(), topicConverter);
+                        return load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic).orElse(null), null).stream(), topicConverter, topicValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving topics. Trying again, iteration: %d, topic: %s", i, startTopic));
                         sleepUninterruptibly(2, SECONDS);

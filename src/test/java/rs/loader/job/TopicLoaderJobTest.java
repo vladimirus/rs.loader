@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.metrics.CounterService;
 import rs.loader.model.Topic;
 import rs.loader.service.SimpleManager;
 import rs.loader.service.convert.Converter;
+import rs.loader.service.validator.Validator;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -43,6 +44,8 @@ public class TopicLoaderJobTest {
     @Mock
     private Converter<Subreddit, Topic> topicConverter;
     @Mock
+    private Validator<Topic> topicValidator;
+    @Mock
     private SimpleManager<Topic> topicManager;
     @Mock
     private LinkLoaderJob linkLoaderJob;
@@ -55,6 +58,7 @@ public class TopicLoaderJobTest {
     public void shouldLoad() {
         // given
         Subreddit subreddit = mock(Subreddit.class);
+        given(topicValidator.isValid(any(Topic.class))).willReturn(true);
         given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), eq(null), eq(null))).willReturn(asList(subreddit, subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
 
@@ -65,7 +69,7 @@ public class TopicLoaderJobTest {
         verify(topicConverter, times(2)).convert(any(Subreddit.class));
         verify(topicManager).save(anyCollectionOf(Topic.class));
         verify(eventBus, times(2)).post(isA(Topic.class));
-        verify(counterService, times(2)).increment(anyString());
+        verify(counterService, times(4)).increment(anyString());
     }
 
     @Test
@@ -92,6 +96,7 @@ public class TopicLoaderJobTest {
     public void shouldLoadWithSubreddit() {
         // given
         Subreddit subreddit = mock(Subreddit.class);
+        given(topicValidator.isValid(any(Topic.class))).willReturn(true);
         given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
         given(topicManager.get(0, 1)).willReturn(singletonList(aTopic()));
@@ -101,7 +106,7 @@ public class TopicLoaderJobTest {
 
         // then
         verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), isA(Subreddit.class), eq(null));
-        verify(counterService, times(2)).increment(anyString());
+        verify(counterService, times(4)).increment(anyString());
     }
 
     @Test
@@ -109,6 +114,7 @@ public class TopicLoaderJobTest {
         // given
         given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willThrow(new RuntimeException("test"));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
+        given(topicValidator.isValid(any(Topic.class))).willReturn(true);
 
         // when
         Optional<Collection<Topic>> actual = topicLoaderJob.process(Optional.of(aTopic()), 1);

@@ -18,6 +18,7 @@ import rs.loader.model.Link;
 import rs.loader.model.Topic;
 import rs.loader.service.SimpleManager;
 import rs.loader.service.convert.Converter;
+import rs.loader.service.validator.Validator;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,6 +32,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private Submissions submissions;
     @Autowired
     private Converter<Submission, Link> linkConverter;
+    @Autowired
+    private Validator<Link> linkValidator;
     @Autowired
     private SimpleManager<Link> linkManager;
     @Autowired
@@ -57,12 +60,16 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
         if(!topicOptional.isPresent()) {
             log.info("Link queue is empty, utilise it more? Sleeping for 5 seconds...");
             sleepUninterruptibly(5, SECONDS);
+        } else {
+            process(topicOptional.get(), 10).ifPresent(linkManager::save);
         }
+    }
 
-        topicOptional.ifPresent(topic -> rangeClosed(1, 10)
+    Optional<Collection<Link>> process(Topic topic, int maxAttempts) {
+        return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-                        return load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter);
+                        return load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
                     } catch (Exception ignore) {
                         log.info(String.format("Error retrieving links. Trying again, iteration: %d, topic: %s", i, topic.getDisplayName()));
                         sleepUninterruptibly(10, SECONDS);
@@ -70,8 +77,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                     }
                 })
                 .filter(links -> links != null)
-                .findAny()
-                .ifPresent(linkManager::save));
+                .findAny();
     }
 
     @Subscribe

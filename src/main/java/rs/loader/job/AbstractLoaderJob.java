@@ -1,5 +1,6 @@
 package rs.loader.job;
 
+import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.toList;
 
@@ -7,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import rs.loader.service.convert.Converter;
+import rs.loader.service.validator.Validator;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -19,7 +21,7 @@ public abstract class AbstractLoaderJob<F, T> {
     @Autowired
     private CounterService counterService;
 
-    Collection<T> load(Stream<F> stream, Converter<F, T> converter) {
+    Collection<T> load(Stream<F> stream, Converter<F, T> converter, Validator<T> validator) {
         return stream.map(original -> {
                     try {
                         return converter.convert(original);
@@ -28,9 +30,11 @@ public abstract class AbstractLoaderJob<F, T> {
                         return null;
                     }
                 })
-                .peek(out -> lastProcessed = now())
                 .filter(out -> out != null)
-                .peek(out -> counterService.increment("loader." + out.getClass().getSimpleName().toLowerCase()))
+                .peek(out -> lastProcessed = now())
+                .peek(out -> counterService.increment(format("loader.%s.notNull", out.getClass().getSimpleName().toLowerCase())))
+                .filter(validator::isValid)
+                .peek(out -> counterService.increment(format("loader.%s.filtered", out.getClass().getSimpleName().toLowerCase())))
                 .collect(toList());
     }
 

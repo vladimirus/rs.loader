@@ -32,6 +32,7 @@ import rs.loader.model.Link;
 import rs.loader.model.Topic;
 import rs.loader.service.SimpleManager;
 import rs.loader.service.convert.Converter;
+import rs.loader.service.validator.Validator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LinkLoaderJobTest {
@@ -42,6 +43,8 @@ public class LinkLoaderJobTest {
     @Mock
     private Converter<Submission, Link> linkConverter;
     @Mock
+    private Validator<Link> linkValidator;
+    @Mock
     private SimpleManager<Link> linkManager;
     @Mock
     private SimpleManager<Topic> topicManager;
@@ -51,6 +54,8 @@ public class LinkLoaderJobTest {
     private GaugeService gaugeService;
     @Test
     public void shouldNotLoadWhenNoTopics() {
+        // given
+        given(linkValidator.isValid(any(Link.class))).willReturn(true);
 
         // when
         linkLoaderJob.load();
@@ -64,6 +69,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoad() {
         // given
+        given(linkValidator.isValid(any(Link.class))).willReturn(true);
         linkLoaderJob.queue.add(aTopic());
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
@@ -82,6 +88,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoadTwo() {
         // given
+        given(linkValidator.isValid(any(Link.class))).willReturn(true);
         linkLoaderJob.queue.add(aTopic());
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
@@ -97,7 +104,7 @@ public class LinkLoaderJobTest {
         // then
         verify(linkConverter, times(3)).convert(any(Submission.class));
         verify(linkManager).save(anyCollectionOf(Link.class));
-        verify(counterService, times(2)).increment(anyString());
+        verify(counterService, times(4)).increment(anyString());
         verify(gaugeService).submit(anyString(), anyDouble());
     }
 
