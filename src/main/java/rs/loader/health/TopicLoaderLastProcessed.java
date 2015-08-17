@@ -20,7 +20,7 @@ public class TopicLoaderLastProcessed implements HealthIndicator {
     @Override
     public Health health() {
         LocalDateTime lastProcessed = topicLoaderJob.getLastProcessed();
-        if (lastProcessed.isBefore(now().minusMinutes(30))) {
+        if (lastProcessed.isBefore(now().minusMinutes(90))) {
             return down().withDetail("topic.last-processed", lastProcessed.toString()).build();
         }
         return up().withDetail("topic.last-processed", lastProcessed.toString()).build();
