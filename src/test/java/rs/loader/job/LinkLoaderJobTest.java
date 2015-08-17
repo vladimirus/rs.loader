@@ -15,8 +15,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rs.TestFactory.aLink;
-import static rs.TestFactory.aTopic;
+import static rs.loader.TestFactory.aLink;
+import static rs.loader.TestFactory.aTopic;
 
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;

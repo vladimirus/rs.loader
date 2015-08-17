@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Mockito.verify;
-import static rs.TestFactory.aTopic;
+import static rs.loader.TestFactory.aTopic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

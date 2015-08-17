@@ -1,4 +1,4 @@
-package rs;
+package rs.loader;
 
 import rs.loader.model.Link;
 import rs.loader.model.Topic;
@@ -49,5 +49,18 @@ public class TestFactory {
                 .description("this is description")
                 .type("public")
                 .build();
+    }
+
+    public static Topic.TopicBuilder topicBuilder() {
+        return Topic.builder()
+                .id("1")
+                .displayName("displayName")
+                .title("title")
+                .created(new Date())
+                .updated(new Date())
+                .nsfw(false)
+                .subscribers(1L)
+                .description("this is description")
+                .type("public");
     }
 }
