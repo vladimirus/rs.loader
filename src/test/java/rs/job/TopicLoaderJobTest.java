@@ -154,7 +154,7 @@ public class TopicLoaderJobTest {
     public void shouldNotBeReadyToRun() {
 
         // when
-        boolean actual = topicLoaderJob.readyToRun(10000, false);
+        boolean actual = topicLoaderJob.readyToRun(5000, false);
 
         // then
         assertThat(actual, is(false));

@@ -55,7 +55,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
         gaugeService.submit("loader.link.queue-size", getQueueSize());
         Optional<Topic> topicOptional = ofNullable(queue.poll());
         if(!topicOptional.isPresent()) {
-            log.info("Link queue is empty, utilise it more?");
+            log.info("Link queue is empty, utilise it more? Sleeping for 5 seconds...");
+            sleepUninterruptibly(5, SECONDS);
         }
 
         topicOptional.ifPresent(topic -> rangeClosed(1, 10)

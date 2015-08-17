@@ -1,5 +1,6 @@
 package rs.health;
 
+import static java.time.LocalDateTime.now;
 import static org.springframework.boot.actuate.health.Health.down;
 import static org.springframework.boot.actuate.health.Health.up;
 
@@ -19,7 +20,7 @@ public class TopicLoaderLastProcessed implements HealthIndicator {
     @Override
     public Health health() {
         LocalDateTime lastProcessed = topicLoaderJob.getLastProcessed();
-        if (lastProcessed.isBefore(LocalDateTime.now().minusMinutes(30))) {
+        if (lastProcessed.isBefore(now().minusMinutes(30))) {
             return down().withDetail("topic.last-processed", lastProcessed.toString()).build();
         }
         return up().withDetail("topic.last-processed", lastProcessed.toString()).build();

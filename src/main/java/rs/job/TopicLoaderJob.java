@@ -2,6 +2,7 @@ package rs.job;
 
 import static com.github.jreddit.retrieval.params.SubredditsView.POPULAR;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.IntStream.rangeClosed;
 
@@ -57,7 +58,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     }
 
     boolean readyToRun(int queueSize, boolean currentlySleeping) {
-        return !(queueSize >= 10000 || (queueSize > 100 && currentlySleeping));
+        return !(queueSize >= 5000 || (queueSize > 100 && currentlySleeping));
     }
 
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
@@ -66,7 +67,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
                     try {
                         return load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic), null).stream(), topicConverter);
                     } catch (Exception ignore) {
-                        log.info(String.format("Error retrieving topic. Trying again, iteration: %d, topic: %s", i, startTopic));
+                        log.info(format("Error retrieving topic. Trying again, iteration: %d, topic: %s", i, startTopic));
                         sleepUninterruptibly(2, SECONDS);
                         return Collections.<Topic>emptyList();
                     }
