@@ -1,12 +1,13 @@
 package rs.loader;
 
+import static org.apache.http.client.config.CookieSpecs.IGNORE_COOKIES;
+
 import com.github.jreddit.entity.User;
 import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.Subreddits;
 import com.github.jreddit.utils.restclient.HttpRestClient;
 import com.github.jreddit.utils.restclient.RestClient;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,7 @@ public class RsLoaderConfig {
     @Bean
     public RequestConfig requestConfig() {
         return RequestConfig.custom()
-                .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+                .setCookieSpec(IGNORE_COOKIES)
                 .setSocketTimeout(60000)
                 .setConnectionRequestTimeout(60000)
                 .setConnectTimeout(60000)

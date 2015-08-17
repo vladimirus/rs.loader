@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
-        classpath("io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE")
+        classpath("io.spring.gradle:dependency-management-plugin:0.5.2.RELEASE")
     }
 }
 
@@ -33,10 +33,10 @@ configurations {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-jetty")
     compile("org.zalando.stups:spring-boot-starter-guava-eventbus:0.5.3")
     compile("com.github.jreddit:jreddit:1.0.3")
     compile("org.projectlombok:lombok:1.16.4")
