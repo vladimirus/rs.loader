@@ -12,7 +12,7 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableScheduling
-public class RsConfigScheduling  implements SchedulingConfigurer {
+public class RsLoaderConfigScheduling implements SchedulingConfigurer {
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(taskExecutor());

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import rs.loader.service.utils.RetryRestResponseHandler;
 
 @Configuration
-public class RsConfig {
+public class RsLoaderConfig {
 
     @Bean
     public RequestConfig requestConfig() {
