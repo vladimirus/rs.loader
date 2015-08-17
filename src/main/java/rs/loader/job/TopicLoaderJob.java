@@ -70,7 +70,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
                     try {
                         return load(subreddits.get(POPULAR, 0, 100, lastSubreddit(startTopic).orElse(null), null).stream(), topicConverter, topicValidator);
                     } catch (Exception ignore) {
-                        log.info(format("Error retrieving topics. Trying again, iteration: %d, topic: %s", i, startTopic));
+                        log.info(format("Error retrieving topics. Trying again, iteration: %d, start-topic: %s", i, startTopic.isPresent() ? startTopic.get().getDisplayName() : "<null>"));
                         sleepUninterruptibly(2, SECONDS);
                         return Collections.<Topic>emptyList();
                     }

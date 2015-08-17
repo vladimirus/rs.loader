@@ -32,9 +32,9 @@ public abstract class AbstractLoaderJob<F, T> {
                 })
                 .filter(out -> out != null)
                 .peek(out -> lastProcessed = now())
-                .peek(out -> counterService.increment(format("loader.%s.notNull", out.getClass().getSimpleName().toLowerCase())))
+                .peek(out -> counterService.increment(format("loader.%s.step01.notNull", out.getClass().getSimpleName().toLowerCase())))
                 .filter(validator::isValid)
-                .peek(out -> counterService.increment(format("loader.%s.filtered", out.getClass().getSimpleName().toLowerCase())))
+                .peek(out -> counterService.increment(format("loader.%s.step02.filtered", out.getClass().getSimpleName().toLowerCase())))
                 .collect(toList());
     }
 
