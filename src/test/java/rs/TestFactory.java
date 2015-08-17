@@ -1,7 +1,7 @@
 package rs;
 
-import rs.model.Link;
-import rs.model.Topic;
+import rs.loader.model.Link;
+import rs.loader.model.Topic;
 
 import java.util.Date;
 
