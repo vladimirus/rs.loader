@@ -2,6 +2,7 @@ package rs.loader.service.utils;
 
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
@@ -28,7 +29,7 @@ public class RetryRestResponseHandler implements ResponseHandler<Response> {
         try {
             return new RestResponse(content, new JSONParser().parse(content), response);
         } catch (Throwable e) {
-            log.error("Error parsing response. Sleeping for 10 seconds...");
+            log.error(format("Error parsing response, status code was %d. Sleeping for %d seconds...", response.getStatusLine().getStatusCode(), 10));
 //            log.error("Error parsing response", e);
 //            log.error("Response was " + responseStr);
             sleepUninterruptibly(10, SECONDS); //slow down
