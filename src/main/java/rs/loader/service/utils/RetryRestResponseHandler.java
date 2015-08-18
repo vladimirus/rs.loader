@@ -29,12 +29,21 @@ public class RetryRestResponseHandler implements ResponseHandler<Response> {
         try {
             return new RestResponse(content, new JSONParser().parse(content), response);
         } catch (Throwable e) {
-            log.error(format("Error parsing response, status code was %d. Sleeping for %d seconds...", response.getStatusLine().getStatusCode(), 10));
+            log.error(format("Error parsing response, status code was %d. Sleeping for %d seconds...", statusCode(response), 10));
 //            log.error("Error parsing response", e);
 //            log.error("Response was " + responseStr);
             sleepUninterruptibly(10, SECONDS); //slow down
         }
         return null;
+    }
+
+    private int statusCode(HttpResponse response) {
+        try {
+            return response.getStatusLine().getStatusCode();
+        } catch (Exception ignore) {
+            log.error("Error getting status code", ignore);
+            return 0;
+        }
     }
 
     private String content(HttpResponse response) throws IOException {
