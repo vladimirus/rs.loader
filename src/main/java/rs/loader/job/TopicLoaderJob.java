@@ -20,7 +20,6 @@ import rs.loader.service.convert.Converter;
 import rs.loader.service.validator.Validator;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -72,10 +71,10 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving topics. Trying again, iteration: %d, start-topic: %s", i, startTopic.isPresent() ? startTopic.get().getDisplayName() : "<null>"));
                         sleepUninterruptibly(2, SECONDS);
-                        return Collections.<Topic>emptyList();
+                        return null;
                     }
                 })
-                .filter(topics -> !topics.isEmpty())
+                .filter(topics -> topics != null)
                 .findAny();
     }
 
