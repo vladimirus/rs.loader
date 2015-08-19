@@ -44,14 +44,14 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     public synchronized void load() {
         if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
             sleeping = false;
-            Optional<Collection<Topic>> optionalTopics = process(lastIndexedTopic(), 10);
+            Optional<Collection<Topic>> retrievedTopics = process(lastIndexedTopic(), 10);
 
-            optionalTopics.ifPresent(topics -> {
+            retrievedTopics.ifPresent(topics -> {
                 topicManager.save(topics);
                 topics.stream().forEach(eventBus::post);
             });
 
-            if (!optionalTopics.isPresent()) {
+            if (!retrievedTopics.isPresent()) {
                 process(Optional.<Topic>empty(), 5);
             }
         } else {
@@ -64,6 +64,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     }
 
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
+        log.info(format("Retrieving topics, start-topic: %s", startTopic.isPresent() ? startTopic.get().getDisplayName() : "<null>"));
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
