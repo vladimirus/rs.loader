@@ -63,9 +63,10 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
 
         ofNullable(queue.poll())
                 .flatMap(topic -> process(topic, 10))
+                .filter(links -> !links.isEmpty())
                 .ifPresent(links -> {
                     linkManager.save(links);
-                    log.info(format("Topic %-20s, saved %2d links", links.stream().findAny().get().getTopic(), links.size()));
+                    log.info(format("%20s: saved %2d links", links.stream().findAny().get().getTopic(), links.size()));
                 });
 
         if(queue.isEmpty()) {
