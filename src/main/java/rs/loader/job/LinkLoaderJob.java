@@ -65,7 +65,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                 .flatMap(topic -> process(topic, 10))
                 .ifPresent(links -> {
                     linkManager.save(links);
-                    log.info(format("Saved %d links", links.size()));
+                    log.info(format("Topic %-20s, saved %2d links", links.stream().findAny().get().getTopic(), links.size()));
                 });
 
         if(queue.isEmpty()) {
