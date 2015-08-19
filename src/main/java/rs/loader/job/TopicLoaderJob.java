@@ -65,7 +65,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
         startTopic.ifPresent(topic -> {
-            log.info(format("Retrieving topics, start-topic-name: %s (%s)", topic.getDisplayName(), topic.getId()));
+            log.debug(format("Retrieving topics, start-topic-name: %s (%s)", topic.getDisplayName(), topic.getId()));
         });
 
         return rangeClosed(1, maxAttempts)

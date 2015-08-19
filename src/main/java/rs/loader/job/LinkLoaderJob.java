@@ -66,7 +66,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                 .filter(links -> !links.isEmpty())
                 .ifPresent(links -> {
                     linkManager.save(links);
-                    log.info(format("%20s: saved %2d links", links.stream().findAny().get().getTopic(), links.size()));
+                    log.debug(format("%20s: saved %3d links", links.stream().findAny().get().getTopic(), links.size()));
                 });
 
         if(queue.isEmpty()) {
