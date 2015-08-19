@@ -64,7 +64,10 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     }
 
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
-        log.info(format("Retrieving topics, start-topic: %s", startTopic.isPresent() ? startTopic.get().getDisplayName() : "<null>"));
+        log.info(format("Retrieving topics, start-topic-name: %s, start-topic-id: %s",
+                startTopic.isPresent() ? startTopic.get().getDisplayName() : "<null>",
+                startTopic.isPresent() ? startTopic.get().getId() : "<null>"));
+
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
