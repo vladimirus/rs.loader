@@ -1,6 +1,6 @@
 package rs.loader.job;
 
-import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
+import static com.github.jreddit.retrieval.params.SubmissionSort.HOT;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -79,7 +79,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-                        return load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
+                        return load(submissions.ofSubreddit(topic.getDisplayName(), HOT, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topic.getDisplayName(), ERROR_SLEEP_IN_SECONDS));
                         sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
