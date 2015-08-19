@@ -99,7 +99,7 @@ public class TopicLoaderJobTest {
         given(topicValidator.isValid(any(Topic.class))).willReturn(true);
         given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
-        given(topicManager.get(0, 1)).willReturn(singletonList(aTopic()));
+        given(topicManager.get(0, 100)).willReturn(singletonList(aTopic()));
 
         // when
         topicLoaderJob.load();

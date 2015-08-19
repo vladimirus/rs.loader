@@ -3,11 +3,14 @@ package rs.loader.job;
 import static com.github.jreddit.retrieval.params.SubredditsView.POPULAR;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.IntStream.rangeClosed;
 
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.eventbus.AsyncEventBus;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -40,20 +43,20 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     boolean sleeping;
 
+    Cache<String, Topic> cache = CacheBuilder.newBuilder().expireAfterWrite(1, HOURS).build();
+
+
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public synchronized void load() {
         if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
             sleeping = false;
-            Optional<Collection<Topic>> retrievedTopics = process(lastIndexedTopic(), 10);
-
-            retrievedTopics.ifPresent(topics -> {
-                topicManager.save(topics);
-                topics.stream().forEach(eventBus::post);
-            });
-
-            if (!retrievedTopics.isPresent()) {
-                process(Optional.<Topic>empty(), 5);
-            }
+            process(topicToCheck(lastIndexedTopics()), 10)
+                    .ifPresent(
+                    retrievedTopics -> {
+                        topicManager.save(retrievedTopics);
+                        retrievedTopics.stream().forEach(eventBus::post);
+                    }
+            );
         } else {
             sleeping = true;
         }
@@ -84,23 +87,24 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     @SuppressWarnings("unchecked")
     Optional<Subreddit> lastSubreddit(Optional<Topic> lastCheckedTopic) {
-        Optional<Subreddit> subreddit = Optional.empty();
-
-        if (lastCheckedTopic.isPresent()) {
+        return lastCheckedTopic.map(topic -> {
             JSONObject json = new JSONObject();
             json.put("name", lastCheckedTopic.get().getId());
             json.put("created", 1.0);
             json.put("created_utc", 1.0);
             json.put("subscribers", 1L);
-            subreddit = Optional.of(new Subreddit(json));
-        }
-
-        return subreddit;
+            return new Subreddit(json);
+        });
     }
 
-    private Optional<Topic> lastIndexedTopic() {
-        return topicManager.get(0, 1)
-                .stream()
-                .findFirst();
+    private Optional<Topic> topicToCheck(Collection<Topic> recentTopics) {
+        return recentTopics.stream()
+                .filter(topic -> cache.getIfPresent(topic.getId()) == null)
+                .peek(topic -> cache.put(topic.getId(), topic))
+                .findAny();
+    }
+
+    private Collection<Topic> lastIndexedTopics() {
+        return topicManager.get(0, 100);
     }
 }
