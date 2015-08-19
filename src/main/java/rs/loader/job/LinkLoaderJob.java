@@ -2,6 +2,7 @@ package rs.loader.job;
 
 import static com.github.jreddit.retrieval.params.SubmissionSort.TOP;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.IntStream.rangeClosed;
@@ -27,6 +28,9 @@ import java.util.Queue;
 
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
+    static int IDLE_SLEEP_IN_SECONDS = 5;
+    static int ERROR_SLEEP_IN_SECONDS = 10;
+
     private Logger log = Logger.getLogger(LinkLoaderJob.class);
     @Autowired
     private Submissions submissions;
@@ -56,12 +60,17 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
         gaugeService.submit("loader.link.queue-size", getQueueSize());
-        Optional<Topic> topicOptional = ofNullable(queue.poll());
-        if(!topicOptional.isPresent()) {
-            log.info("Link queue is empty, utilise it more? Sleeping for 5 seconds...");
-            sleepUninterruptibly(5, SECONDS);
-        } else {
-            process(topicOptional.get(), 10).ifPresent(linkManager::save);
+
+        ofNullable(queue.poll())
+                .flatMap(topic -> process(topic, 10))
+                .ifPresent(links -> {
+                    linkManager.save(links);
+                    log.info(format("Saved %d links", links.size()));
+                });
+
+        if(queue.isEmpty()) {
+            log.info(format("Link queue is empty, utilise it more? Sleeping for %d seconds...", IDLE_SLEEP_IN_SECONDS));
+            sleepUninterruptibly(IDLE_SLEEP_IN_SECONDS, SECONDS);
         }
     }
 
@@ -71,8 +80,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                     try {
                         return load(submissions.ofSubreddit(topic.getDisplayName(), TOP, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
                     } catch (Exception ignore) {
-                        log.info(String.format("Error retrieving links. Trying again, iteration: %d, topic: %s", i, topic.getDisplayName()));
-                        sleepUninterruptibly(10, SECONDS);
+                        log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topic.getDisplayName(), ERROR_SLEEP_IN_SECONDS));
+                        sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
                         return null;
                     }
                 })

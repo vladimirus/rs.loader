@@ -21,6 +21,7 @@ import static rs.loader.TestFactory.aTopic;
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.params.SubmissionSort;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -52,6 +53,13 @@ public class LinkLoaderJobTest {
     private CounterService counterService;
     @Mock
     private GaugeService gaugeService;
+
+    @Before
+    public void setup() {
+        LinkLoaderJob.IDLE_SLEEP_IN_SECONDS = 0;
+        LinkLoaderJob.ERROR_SLEEP_IN_SECONDS = 0;
+    }
+
     @Test
     public void shouldNotLoadWhenNoTopics() {
         // given
