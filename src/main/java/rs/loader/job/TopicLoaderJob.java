@@ -42,21 +42,18 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     private AsyncEventBus eventBus;
 
     boolean sleeping;
-
-    Cache<String, Topic> cache = CacheBuilder.newBuilder().expireAfterWrite(1, HOURS).build();
-
+    private Cache<String, Topic> cache = CacheBuilder.newBuilder().expireAfterWrite(1, HOURS).build();
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public synchronized void load() {
         if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
-            sleeping = false;
-            process(topicToCheck(lastIndexedTopics()), 10)
-                    .ifPresent(
+            process(topicToCheck(lastIndexedTopics()), 10).ifPresent(
                     retrievedTopics -> {
                         topicManager.save(retrievedTopics);
                         retrievedTopics.stream().forEach(eventBus::post);
                     }
             );
+            sleeping = false;
         } else {
             sleeping = true;
         }
@@ -67,9 +64,9 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     }
 
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
-        log.info(format("Retrieving topics, start-topic-name: %s, start-topic-id: %s",
-                startTopic.isPresent() ? startTopic.get().getDisplayName() : "<null>",
-                startTopic.isPresent() ? startTopic.get().getId() : "<null>"));
+        startTopic.ifPresent(topic -> {
+            log.info(format("Retrieving topics, start-topic-name: %s (%s)", topic.getDisplayName(), topic.getId()));
+        });
 
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
