@@ -24,7 +24,7 @@ public class LinkLoaderQueueSizeTest {
     @Test
     public void shouldBeHealthy() {
         // given
-        given(linkLoaderJob.getQueueSize()).willReturn(10);
+        given(linkLoaderJob.queueSize()).willReturn(10);
 
         // when
         Health actual = linkLoaderQueueSize.health();
@@ -36,7 +36,7 @@ public class LinkLoaderQueueSizeTest {
     @Test
     public void shouldNotBeHealthy() {
         // given
-        given(linkLoaderJob.getQueueSize()).willReturn(9);
+        given(linkLoaderJob.queueSize()).willReturn(9);
 
         // when
         Health actual = linkLoaderQueueSize.health();

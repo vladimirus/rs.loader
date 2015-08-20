@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
-    static int SIZE_OF_TOPICS_TO_COLLECT = 5000;
+    static int SIZE_OF_TOPICS_TO_COLLECT = 3000;
 
     private Logger log = Logger.getLogger(TopicLoaderJob.class);
     @Autowired
@@ -50,13 +50,20 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public synchronized void load() {
-        if (readyToRun(linkLoaderJob.getQueueSize())) {
+        if (readyToRun(linkLoaderJob.queueSize())) {
             topicManager.save(iterate(0, i -> i + 1)
                     .mapToObj(i -> process(topicToCheck(lastIndexedTopics()), 10).orElse(emptyList()))
                     .flatMap(Collection::stream)
                     .peek(eventBus::post)
                     .limit(SIZE_OF_TOPICS_TO_COLLECT)
                     .collect(toList()));
+        }
+    }
+
+    @Scheduled(initialDelay = 3000, fixedRate = 609999999) //once a week, or during start
+    public void initQueue() {
+        if (linkLoaderJob.queueSize() <= 0) {
+            topicManager.get(0, SIZE_OF_TOPICS_TO_COLLECT).stream().forEach(eventBus::post);
         }
     }
 

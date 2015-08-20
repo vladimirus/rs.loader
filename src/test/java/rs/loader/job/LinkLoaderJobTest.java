@@ -1,7 +1,6 @@
 package rs.loader.job;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.mockito.BDDMockito.given;
@@ -9,7 +8,6 @@ import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -48,8 +46,6 @@ public class LinkLoaderJobTest {
     @Mock
     private SimpleManager<Link> linkManager;
     @Mock
-    private SimpleManager<Topic> topicManager;
-    @Mock
     private CounterService counterService;
     @Mock
     private GaugeService gaugeService;
@@ -78,7 +74,7 @@ public class LinkLoaderJobTest {
     public void shouldLoad() {
         // given
         given(linkValidator.isValid(any(Link.class))).willReturn(true);
-        linkLoaderJob.queue.add(aTopic());
+        linkLoaderJob.queue.add("topic");
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission));
@@ -97,7 +93,7 @@ public class LinkLoaderJobTest {
     public void shouldLoadTwo() {
         // given
         given(linkValidator.isValid(any(Link.class))).willReturn(true);
-        linkLoaderJob.queue.add(aTopic());
+        linkLoaderJob.queue.add("topic");
         Submission submission = mock(Submission.class);
         given(submissions.ofSubreddit(anyString(), any(SubmissionSort.class), eq(-1), eq(100), eq(null), eq(null), eq(true)))
                 .willReturn(asList(submission, submission, submission));
@@ -119,36 +115,12 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldHandleTopic() {
         // given
-        Topic topic = aTopic("id123");
+        Topic topic = aTopic("id", "displayName");
 
         // when
         linkLoaderJob.handle(topic);
 
         // then
-        assertThat(linkLoaderJob.queue, contains(topic));
-    }
-
-    @Test
-    public void shouldInitQueue() {
-        // given
-        given(topicManager.get(isA(Integer.class), isA(Integer.class))).willReturn(singletonList(aTopic()));
-
-        // when
-        linkLoaderJob.initQueue();
-
-        // then
-        verify(topicManager).get(isA(Integer.class), isA(Integer.class));
-    }
-
-    @Test
-    public void shouldNotInitQueue() {
-        // given
-        linkLoaderJob.queue.add(aTopic());
-
-        // when
-        linkLoaderJob.initQueue();
-
-        // then
-        verify(topicManager, never()).get(isA(Integer.class), isA(Integer.class));
+        assertThat(linkLoaderJob.queue, contains("displayName"));
     }
 }

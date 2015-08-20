@@ -41,28 +41,17 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Autowired
     private SimpleManager<Link> linkManager;
     @Autowired
-    private SimpleManager<Topic> topicManager;
-    @Autowired
     private GaugeService gaugeService;
 
-    Queue<Topic> queue = new LinkedList<>();
+    Queue<String> queue = new LinkedList<>();
 
-    @Scheduled(initialDelay = 3000, fixedRate = 609999999) //once a week, or during start
-    public void initQueue() {
-        if (queue.isEmpty()) {
-            Collection<Topic> topics = topicManager.get(0, 1000);
-            if (topics != null && !topics.isEmpty()) {
-                queue.addAll(topics);
-            }
-        }
-    }
 
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
-        gaugeService.submit("loader.link.queue-size", getQueueSize());
+        gaugeService.submit("loader.link.queue-size", queueSize());
 
         ofNullable(queue.poll())
-                .flatMap(topic -> process(topic, 10))
+                .flatMap(topicDisplayName -> process(topicDisplayName, 10))
                 .filter(links -> !links.isEmpty())
                 .ifPresent(links -> {
                     linkManager.save(links);
@@ -75,13 +64,13 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
         }
     }
 
-    Optional<Collection<Link>> process(Topic topic, int maxAttempts) {
+    Optional<Collection<Link>> process(String topicDisplayName, int maxAttempts) {
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-                        return load(submissions.ofSubreddit(topic.getDisplayName(), HOT, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
+                        return load(submissions.ofSubreddit(topicDisplayName, HOT, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
                     } catch (Exception ignore) {
-                        log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topic.getDisplayName(), ERROR_SLEEP_IN_SECONDS));
+                        log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topicDisplayName, ERROR_SLEEP_IN_SECONDS));
                         sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
                         return null;
                     }
@@ -92,10 +81,10 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
 
     @Subscribe
     public void handle(Topic topic) {
-        queue.add(topic);
+        queue.add(topic.getDisplayName());
     }
 
-    public int getQueueSize() {
+    public int queueSize() {
         return queue.size();
     }
 }

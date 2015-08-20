@@ -16,7 +16,7 @@ public class LinkLoaderQueueSize implements HealthIndicator {
 
     @Override
     public Health health() {
-        int queueSize = linkLoaderJob.getQueueSize();
+        int queueSize = linkLoaderJob.queueSize();
         if (queueSize < 10) {
             return down().withDetail("queue-size", queueSize).build();
         }
