@@ -3,8 +3,11 @@ package rs.loader.job;
 import static com.github.jreddit.retrieval.params.SubredditsView.POPULAR;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.iterate;
 import static java.util.stream.IntStream.rangeClosed;
 
 import com.github.jreddit.entity.Subreddit;
@@ -27,6 +30,8 @@ import java.util.Optional;
 
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
+    static int SIZE_OF_TOPICS_TO_COLLECT = 5000;
+
     private Logger log = Logger.getLogger(TopicLoaderJob.class);
     @Autowired
     private Subreddits subreddits;
@@ -41,26 +46,22 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     @Autowired
     private AsyncEventBus eventBus;
 
-    boolean sleeping;
     private Cache<String, Topic> cache = CacheBuilder.newBuilder().expireAfterWrite(1, HOURS).build();
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public synchronized void load() {
-        if (readyToRun(linkLoaderJob.getQueueSize(), sleeping)) {
-            process(topicToCheck(lastIndexedTopics()), 10).ifPresent(
-                    retrievedTopics -> {
-                        topicManager.save(retrievedTopics);
-                        retrievedTopics.stream().forEach(eventBus::post);
-                    }
-            );
-            sleeping = false;
-        } else {
-            sleeping = true;
+        if (readyToRun(linkLoaderJob.getQueueSize())) {
+            topicManager.save(iterate(0, i -> i + 1)
+                    .mapToObj(i -> process(topicToCheck(lastIndexedTopics()), 10).orElse(emptyList()))
+                    .flatMap(Collection::stream)
+                    .peek(eventBus::post)
+                    .limit(SIZE_OF_TOPICS_TO_COLLECT)
+                    .collect(toList()));
         }
     }
 
-    boolean readyToRun(int queueSize, boolean currentlySleeping) {
-        return !(queueSize >= 5000 || (queueSize > 100 && currentlySleeping));
+    boolean readyToRun(int queueSize) {
+        return queueSize <= 100;
     }
 
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {

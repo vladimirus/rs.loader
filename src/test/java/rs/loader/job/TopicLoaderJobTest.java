@@ -1,6 +1,5 @@
 package rs.loader.job;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -21,6 +20,7 @@ import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
 import com.github.jreddit.retrieval.params.SubredditsView;
 import com.google.common.eventbus.AsyncEventBus;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -54,22 +54,28 @@ public class TopicLoaderJobTest {
     @Mock
     private CounterService counterService;
 
+    @Before
+    public void setup() {
+        TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT = 5;
+    }
+
     @Test
     public void shouldLoad() {
         // given
         Subreddit subreddit = mock(Subreddit.class);
         given(topicValidator.isValid(any(Topic.class))).willReturn(true);
-        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), eq(null), eq(null))).willReturn(asList(subreddit, subreddit));
+        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), eq(null), eq(null))).willReturn(singletonList(subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
+        given(linkLoaderJob.getQueueSize()).willReturn(0, 1, 2);
 
         // when
         topicLoaderJob.load();
 
         // then
-        verify(topicConverter, times(2)).convert(any(Subreddit.class));
+        verify(topicConverter, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT)).convert(any(Subreddit.class));
         verify(topicManager).save(anyCollectionOf(Topic.class));
-        verify(eventBus, times(2)).post(isA(Topic.class));
-        verify(counterService, times(4)).increment(anyString());
+        verify(eventBus, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT)).post(isA(Topic.class));
+        verify(counterService, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
     }
 
     @Test
@@ -97,7 +103,7 @@ public class TopicLoaderJobTest {
         // given
         Subreddit subreddit = mock(Subreddit.class);
         given(topicValidator.isValid(any(Topic.class))).willReturn(true);
-        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(asList(subreddit, subreddit));
+        given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(singletonList(subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
         given(topicManager.get(0, 100)).willReturn(singletonList(aTopic()));
 
@@ -106,7 +112,7 @@ public class TopicLoaderJobTest {
 
         // then
         verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), isA(Subreddit.class), eq(null));
-        verify(counterService, times(4)).increment(anyString());
+        verify(counterService, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
     }
 
     @Test
@@ -129,7 +135,7 @@ public class TopicLoaderJobTest {
     public void shouldBeReadyToRun() {
 
         // when
-        boolean actual = topicLoaderJob.readyToRun(100, false);
+        boolean actual = topicLoaderJob.readyToRun(100);
 
         // then
         assertThat(actual, is(true));
@@ -139,27 +145,7 @@ public class TopicLoaderJobTest {
     public void shouldNotBeReadyBecauseSleeping() {
 
         // when
-        boolean actual = topicLoaderJob.readyToRun(101, true);
-
-        // then
-        assertThat(actual, is(false));
-    }
-
-    @Test
-    public void shouldBeReadyToRunAfterSleep() {
-
-        // when
-        boolean actual = topicLoaderJob.readyToRun(10, true);
-
-        // then
-        assertThat(actual, is(true));
-    }
-
-    @Test
-    public void shouldNotBeReadyToRun() {
-
-        // when
-        boolean actual = topicLoaderJob.readyToRun(5000, false);
+        boolean actual = topicLoaderJob.readyToRun(101);
 
         // then
         assertThat(actual, is(false));
