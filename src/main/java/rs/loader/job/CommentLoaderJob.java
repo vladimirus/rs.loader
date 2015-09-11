@@ -1,23 +1,22 @@
 package rs.loader.job;
 
-import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.ExtendedComments;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rs.loader.model.Topic;
+import rs.loader.model.Comment;
 import rs.loader.service.convert.Converter;
 import rs.loader.service.validator.Validator;
 
 @Service
-public class CommentLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
+public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entity.Comment, Comment> {
     private Logger log = Logger.getLogger(CommentLoaderJob.class);
     @Autowired
     private ExtendedComments comments;
     @Autowired
-    private Converter<Subreddit, Topic> topicConverter;
+    private Converter<com.github.jreddit.entity.Comment, Comment> topicConverter;
     @Autowired
-    private Validator<Topic> topicValidator;
+    private Validator<Comment> commentValidator;
 
 
 //    @Scheduled(initialDelay = 20000, fixedRate = 1000)
