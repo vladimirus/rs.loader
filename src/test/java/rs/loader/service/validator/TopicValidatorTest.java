@@ -2,7 +2,7 @@ package rs.loader.service.validator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static rs.loader.TestFactory.topicBuilder;
+import static rs.loader.TestFactory.aTopicBuilder;
 
 import org.junit.Test;
 
@@ -16,7 +16,7 @@ public class TopicValidatorTest {
         topicValidator.maxNumberOfSubscribers = 10;
 
         // when
-        boolean actual = topicValidator.isValid(topicBuilder().subscribers(3L).build());
+        boolean actual = topicValidator.isValid(aTopicBuilder().subscribers(3L).build());
 
         // then
         assertThat(actual, is(true));
@@ -30,7 +30,7 @@ public class TopicValidatorTest {
         topicValidator.maxNumberOfSubscribers = 10;
 
         // when
-        boolean actual = topicValidator.isValid(topicBuilder().subscribers(1L).build());
+        boolean actual = topicValidator.isValid(aTopicBuilder().subscribers(1L).build());
 
         // then
         assertThat(actual, is(false));

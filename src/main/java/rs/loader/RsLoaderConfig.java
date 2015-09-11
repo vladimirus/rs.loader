@@ -3,6 +3,7 @@ package rs.loader;
 import static org.apache.http.client.config.CookieSpecs.IGNORE_COOKIES;
 
 import com.github.jreddit.entity.User;
+import com.github.jreddit.retrieval.Comments;
 import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.Subreddits;
 import com.github.jreddit.utils.restclient.HttpRestClient;
@@ -60,5 +61,10 @@ public class RsLoaderConfig {
     @Bean
     public Subreddits subreddits() {
         return new Subreddits(redditClient(), redditUser());
+    }
+
+    @Bean
+    public Comments comments() {
+        return new Comments(redditClient(), redditUser());
     }
 }
