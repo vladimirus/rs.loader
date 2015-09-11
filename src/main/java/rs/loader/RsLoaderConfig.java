@@ -4,6 +4,7 @@ import static org.apache.http.client.config.CookieSpecs.IGNORE_COOKIES;
 
 import com.github.jreddit.entity.User;
 import com.github.jreddit.retrieval.Comments;
+import com.github.jreddit.retrieval.ExtendedComments;
 import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.Subreddits;
 import com.github.jreddit.utils.restclient.HttpRestClient;
@@ -66,5 +67,10 @@ public class RsLoaderConfig {
     @Bean
     public Comments comments() {
         return new Comments(redditClient(), redditUser());
+    }
+
+    @Bean
+    public ExtendedComments extendedComments() {
+        return new ExtendedComments(comments());
     }
 }
