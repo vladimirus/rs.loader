@@ -1,6 +1,7 @@
 package rs.loader.model;
 
 
+import com.google.common.base.Splitter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -51,4 +52,13 @@ public class Link implements Model {
     private String selfText;
     private String selfTextHtml;
     private String domain;
+
+    public String getIdWithoutType() {
+        return Splitter.on("_")
+                .trimResults()
+                .splitToList(id)
+                .stream()
+                .skip(1)
+                .findAny().orElse(id);
+    }
 }

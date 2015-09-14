@@ -9,6 +9,7 @@ import static java.util.stream.IntStream.rangeClosed;
 
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
+import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,11 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private SimpleManager<Link> linkManager;
     @Autowired
     private GaugeService gaugeService;
+    @Autowired
+    private CommentLoaderJob commentLoaderJob;
+    @Autowired
+    private AsyncEventBus eventBus;
+
 
     Queue<String> queue = new LinkedList<>();
 
@@ -49,18 +55,20 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
         gaugeService.submit("loader.link.queue-size", queueSize());
+        if (readyToRun(commentLoaderJob.queueSize())) {
+            ofNullable(queue.poll())
+                    .flatMap(topicDisplayName -> process(topicDisplayName, 10))
+                    .filter(links -> !links.isEmpty())
+                    .ifPresent(links -> {
+                        linkManager.save(links);
+                        log.debug(format("%20s: saved %3d links", links.stream().findAny().get().getTopic(), links.size()));
+                        links.stream().forEach(eventBus::post);
+                    });
 
-        ofNullable(queue.poll())
-                .flatMap(topicDisplayName -> process(topicDisplayName, 10))
-                .filter(links -> !links.isEmpty())
-                .ifPresent(links -> {
-                    linkManager.save(links);
-                    log.debug(format("%20s: saved %3d links", links.stream().findAny().get().getTopic(), links.size()));
-                });
-
-        if(queue.isEmpty()) {
-            log.info(format("Link queue is empty, utilise it more? Sleeping for %d seconds...", IDLE_SLEEP_IN_SECONDS));
-            sleepUninterruptibly(IDLE_SLEEP_IN_SECONDS, SECONDS);
+            if (queue.isEmpty()) {
+                log.info(format("Link queue is empty, utilise it more? Sleeping for %d seconds...", IDLE_SLEEP_IN_SECONDS));
+                sleepUninterruptibly(IDLE_SLEEP_IN_SECONDS, SECONDS);
+            }
         }
     }
 

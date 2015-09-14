@@ -41,4 +41,8 @@ public abstract class AbstractLoaderJob<F, T> {
     public LocalDateTime getLastProcessed() {
         return lastProcessed;
     }
+
+    public boolean readyToRun(int queueSize) {
+        return queueSize <= 100;
+    }
 }

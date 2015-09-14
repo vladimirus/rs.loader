@@ -19,6 +19,7 @@ import static rs.loader.TestFactory.aTopic;
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.github.jreddit.retrieval.params.SubmissionSort;
+import com.google.common.eventbus.AsyncEventBus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +50,10 @@ public class LinkLoaderJobTest {
     private CounterService counterService;
     @Mock
     private GaugeService gaugeService;
+    @Mock
+    private CommentLoaderJob commentLoaderJob;
+    @Mock
+    private AsyncEventBus eventBus;
 
     @Before
     public void setup() {
@@ -60,6 +65,7 @@ public class LinkLoaderJobTest {
     public void shouldNotLoadWhenNoTopics() {
         // given
         given(linkValidator.isValid(any(Link.class))).willReturn(true);
+        given(commentLoaderJob.queueSize()).willReturn(0);
 
         // when
         linkLoaderJob.load();
@@ -73,6 +79,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoad() {
         // given
+        given(commentLoaderJob.queueSize()).willReturn(0);
         given(linkValidator.isValid(any(Link.class))).willReturn(true);
         linkLoaderJob.queue.add("topic");
         Submission submission = mock(Submission.class);
@@ -92,6 +99,7 @@ public class LinkLoaderJobTest {
     @Test
     public void shouldLoadTwo() {
         // given
+        given(commentLoaderJob.queueSize()).willReturn(0);
         given(linkValidator.isValid(any(Link.class))).willReturn(true);
         linkLoaderJob.queue.add("topic");
         Submission submission = mock(Submission.class);

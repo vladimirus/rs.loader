@@ -60,21 +60,15 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
         }
     }
 
-    @Scheduled(initialDelay = 3000, fixedRate = 609999999) //once a week, or during start
+//    @Scheduled(initialDelay = 3000, fixedRate = 609999999) //once a week, or during start
     public void initQueue() {
         if (linkLoaderJob.queueSize() <= 0) {
             topicManager.get(0, SIZE_OF_TOPICS_TO_COLLECT).stream().forEach(eventBus::post);
         }
     }
 
-    boolean readyToRun(int queueSize) {
-        return queueSize <= 100;
-    }
-
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
-        startTopic.ifPresent(topic -> {
-            log.debug(format("Retrieving topics, start-topic-name: %s (%s)", topic.getDisplayName(), topic.getId()));
-        });
+        startTopic.ifPresent(topic -> log.debug(format("Retrieving topics, start-topic-name: %s (%s)", topic.getDisplayName(), topic.getId())));
 
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {

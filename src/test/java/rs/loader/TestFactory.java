@@ -67,6 +67,12 @@ public class TestFactory {
                 .type("public");
     }
 
+    public static Comment aComment(String id) {
+        return aCommentBuilder()
+                .id(id)
+                .build();
+    }
+
     public static Comment.CommentBuilder aCommentBuilder() {
         return Comment.builder()
                 .id("1")
