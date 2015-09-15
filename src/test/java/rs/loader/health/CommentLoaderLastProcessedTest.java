@@ -13,22 +13,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.actuate.health.Health;
-import rs.loader.job.LinkLoaderJob;
+import rs.loader.job.CommentLoaderJob;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LinkLoaderLastProcessedTest {
+public class CommentLoaderLastProcessedTest {
     @InjectMocks
-    private LinkLoaderLastProcessed linkLoaderLastProcessed;
+    private CommentLoaderLastProcessed commentLoaderLastProcessed;
     @Mock
-    private LinkLoaderJob linkLoaderJob;
+    private CommentLoaderJob commentLoaderJob;
 
     @Test
     public void shouldBeHealthy() {
         // when
-        given(linkLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(60));
+        given(commentLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(1));
 
         // when
-        Health actual = linkLoaderLastProcessed.health();
+        Health actual = commentLoaderLastProcessed.health();
 
         // then
         assertThat(actual.getStatus(), is(UP));
@@ -37,10 +37,10 @@ public class LinkLoaderLastProcessedTest {
     @Test
     public void shouldNotBeHealthy() {
         // when
-        given(linkLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(61));
+        given(commentLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(11));
 
         // when
-        Health actual = linkLoaderLastProcessed.health();
+        Health actual = commentLoaderLastProcessed.health();
 
         // then
         assertThat(actual.getStatus(), is(DOWN));

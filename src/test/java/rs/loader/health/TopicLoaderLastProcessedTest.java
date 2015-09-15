@@ -37,7 +37,7 @@ public class TopicLoaderLastProcessedTest {
     @Test
     public void shouldNotBeHealthy() {
         // when
-        given(topicLoaderJob.getLastProcessed()).willReturn(now().minusHours(7));
+        given(topicLoaderJob.getLastProcessed()).willReturn(now().minusHours(13));
 
         // when
         Health actual = topicLoaderLastProcessed.health();

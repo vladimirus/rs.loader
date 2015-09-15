@@ -1,6 +1,5 @@
 package rs.loader.health;
 
-import static java.time.LocalDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -13,22 +12,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.actuate.health.Health;
-import rs.loader.job.LinkLoaderJob;
+import rs.loader.job.CommentLoaderJob;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LinkLoaderLastProcessedTest {
+public class CommentLoaderQueueSizeTest {
     @InjectMocks
-    private LinkLoaderLastProcessed linkLoaderLastProcessed;
+    private CommentLoaderQueueSize commentLoaderQueueSize;
     @Mock
-    private LinkLoaderJob linkLoaderJob;
+    private CommentLoaderJob commentLoaderJob;
 
     @Test
     public void shouldBeHealthy() {
-        // when
-        given(linkLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(60));
+        // given
+        given(commentLoaderJob.queueSize()).willReturn(10);
 
         // when
-        Health actual = linkLoaderLastProcessed.health();
+        Health actual = commentLoaderQueueSize.health();
 
         // then
         assertThat(actual.getStatus(), is(UP));
@@ -36,11 +35,11 @@ public class LinkLoaderLastProcessedTest {
 
     @Test
     public void shouldNotBeHealthy() {
-        // when
-        given(linkLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(61));
+        // given
+        given(commentLoaderJob.queueSize()).willReturn(9);
 
         // when
-        Health actual = linkLoaderLastProcessed.health();
+        Health actual = commentLoaderQueueSize.health();
 
         // then
         assertThat(actual.getStatus(), is(DOWN));

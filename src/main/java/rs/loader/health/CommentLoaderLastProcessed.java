@@ -7,19 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
-import rs.loader.job.LinkLoaderJob;
+import rs.loader.job.CommentLoaderJob;
 
 import java.time.LocalDateTime;
 
 @Component
-public class LinkLoaderLastProcessed implements HealthIndicator {
+public class CommentLoaderLastProcessed implements HealthIndicator {
     @Autowired
-    private LinkLoaderJob linkLoaderJob;
+    private CommentLoaderJob commentLoaderJob;
 
     @Override
     public Health health() {
-        LocalDateTime lastProcessed = linkLoaderJob.getLastProcessed();
-        if (lastProcessed.isBefore(LocalDateTime.now().minusHours(1))) {
+        LocalDateTime lastProcessed = commentLoaderJob.getLastProcessed();
+        if (lastProcessed.isBefore(LocalDateTime.now().minusMinutes(10))) {
             return down().withDetail("link.last-processed", lastProcessed.toString()).build();
         }
         return up().withDetail("link.last-processed", lastProcessed.toString()).build();
