@@ -26,6 +26,7 @@ import rs.loader.service.validator.Validator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.stream.Stream;
@@ -78,8 +79,14 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-                        return load(comments.ofSubmission(link, TOP, -1, null).parallelStream()
-                                .flatMap(this::flattened), commentConverter, commentValidator);
+
+                        StopWatch timer = new StopWatch();
+                        timer.start();
+                        List<com.github.jreddit.entity.Comment> c = comments.ofSubmission(link, TOP, -1, null);
+                        timer.stop();
+                        log.info(format("comments for %s retrieved in %s", link, timer.toString()));
+
+                        return load(c.stream().flatMap(this::flattened), commentConverter, commentValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving comments. Trying again, iteration: %d, link: %s", i, link));
                         sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
