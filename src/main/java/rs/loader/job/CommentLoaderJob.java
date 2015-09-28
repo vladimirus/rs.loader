@@ -84,9 +84,11 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
                         StopWatch timer = new StopWatch();
                         timer.start();
                         List<com.github.jreddit.entity.Comment> c = comments.ofSubmission(link, TOP, -1, null);
+                        timer.split();
+                        log.info(format("comments for %s retrieved in %s", link, timer.toString()));
                         List<com.github.jreddit.entity.Comment> cc = c.stream().flatMap(this::flattened).collect(toList());
                         timer.stop();
-                        log.info(format("comments for %s retrieved in %s", link, timer.toString()));
+                        log.info(format("comments for %s flattened in %s", link, timer.toString()));
 
                         return load(cc.parallelStream(), commentConverter, commentValidator);
                     } catch (Exception ignore) {
