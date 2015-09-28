@@ -11,6 +11,7 @@ import static java.util.stream.Stream.of;
 
 import com.github.jreddit.retrieval.ExtendedComments;
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -52,12 +53,16 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
     public synchronized void load() {
         gaugeService.submit("loader.comment.queue-size", queueSize());
 
+        StopWatch timer = new StopWatch();
+        timer.start();
+
         ofNullable(queue.poll())
                 .flatMap(linkId -> process(linkId, 10))
                 .filter(comments -> !comments.isEmpty())
                 .ifPresent(comments -> {
+                    timer.stop();
                     commentManager.save(comments);
-                    log.debug(format("%20s: saved %3d comments", comments.stream().findAny().get().getLinkId(), comments.size()));
+                    log.debug(format("%20s: saved %3d comments; took: %s", comments.stream().findAny().get().getLinkId(), comments.size(), timer.toString()));
                 });
 
         if(queue.isEmpty()) {
@@ -73,7 +78,7 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-                        return load(comments.ofSubmission(link, TOP, -1, null).stream()
+                        return load(comments.ofSubmission(link, TOP, -1, null).parallelStream()
                                 .flatMap(this::flattened), commentConverter, commentValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving comments. Trying again, iteration: %d, link: %s", i, link));
