@@ -5,6 +5,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterrup
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
@@ -83,10 +84,11 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
                         StopWatch timer = new StopWatch();
                         timer.start();
                         List<com.github.jreddit.entity.Comment> c = comments.ofSubmission(link, TOP, -1, null);
+                        List<com.github.jreddit.entity.Comment> cc = c.stream().flatMap(this::flattened).collect(toList());
                         timer.stop();
                         log.info(format("comments for %s retrieved in %s", link, timer.toString()));
 
-                        return load(c.stream().flatMap(this::flattened), commentConverter, commentValidator);
+                        return load(cc.parallelStream(), commentConverter, commentValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving comments. Trying again, iteration: %d, link: %s", i, link));
                         sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
