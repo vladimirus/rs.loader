@@ -49,7 +49,7 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     private Cache<String, Topic> cache = CacheBuilder.newBuilder().expireAfterWrite(1, HOURS).build();
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
-    public synchronized void load() {
+    public void load() {
         if (readyToRun(linkLoaderJob.queueSize())) {
             topicManager.save(iterate(0, i -> i + 1)
                     .mapToObj(i -> process(topicToCheck(lastIndexedTopics()), 10).orElse(emptyList()))

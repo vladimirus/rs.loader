@@ -50,7 +50,7 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
     Queue<String> queue = new LinkedList<>();
 
     @Scheduled(initialDelay = 20000, fixedRate = 100)
-    public synchronized void load() {
+    public void load() {
         gaugeService.submit("loader.comment.queue-size", queueSize());
 
         StopWatch timer = new StopWatch();
