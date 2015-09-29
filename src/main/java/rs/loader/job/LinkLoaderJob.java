@@ -11,6 +11,7 @@ import com.github.jreddit.entity.Submission;
 import com.github.jreddit.retrieval.Submissions;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -56,12 +57,17 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     public void load() {
         gaugeService.submit("loader.link.queue-size", queueSize());
         if (readyToRun(commentLoaderJob.queueSize())) {
+
+            StopWatch timer = new StopWatch();
+            timer.start();
+
             ofNullable(queue.poll())
                     .flatMap(topicDisplayName -> process(topicDisplayName, 10))
                     .filter(links -> !links.isEmpty())
                     .ifPresent(links -> {
+                        timer.stop();
                         linkManager.save(links);
-                        log.debug(format("%20s: saved %3d links", links.stream().findAny().get().getTopic(), links.size()));
+                        log.debug(format("%20s: saved %3d links; took: %s", links.stream().findAny().get().getTopic(), links.size(), timer.toString()));
                         links.stream().forEach(eventBus::post);
                     });
 

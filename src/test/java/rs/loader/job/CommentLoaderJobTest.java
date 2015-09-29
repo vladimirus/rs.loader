@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static rs.loader.TestFactory.aComment;
 
-import com.github.jreddit.retrieval.ExtendedComments;
+import com.github.jreddit.retrieval.Comments;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,7 +28,7 @@ public class CommentLoaderJobTest {
     @InjectMocks
     private CommentLoaderJob commentLoaderJob;
     @Mock
-    private ExtendedComments comments;
+    private Comments comments;
     @Mock
     private Converter<com.github.jreddit.entity.Comment, Comment> commentConverter;
     @Mock
@@ -43,7 +43,7 @@ public class CommentLoaderJobTest {
         // given
         com.github.jreddit.entity.Comment returned = mock(com.github.jreddit.entity.Comment.class);
         Comment comment = aComment("type-id");
-        given(comments.ofSubmission("type-id", TOP, -1, null)).willReturn(singletonList(returned));
+        given(comments.ofSubmission("type-id", null, -1, -1, -1, TOP)).willReturn(singletonList(returned));
         given(commentConverter.convert(returned)).willReturn(comment);
         given(commentValidator.isValid(comment)).willReturn(true);
 

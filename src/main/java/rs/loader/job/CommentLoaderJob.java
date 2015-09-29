@@ -5,12 +5,11 @@ import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterrup
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
 
-import com.github.jreddit.retrieval.ExtendedComments;
+import com.github.jreddit.retrieval.Comments;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -27,7 +26,6 @@ import rs.loader.service.validator.Validator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.stream.Stream;
@@ -39,7 +37,7 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
 
     private Logger log = Logger.getLogger(CommentLoaderJob.class);
     @Autowired
-    private ExtendedComments comments;
+    private Comments comments;
     @Autowired
     private Converter<com.github.jreddit.entity.Comment, Comment> commentConverter;
     @Autowired
@@ -80,17 +78,7 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
-
-                        StopWatch timer = new StopWatch();
-                        timer.start();
-                        List<com.github.jreddit.entity.Comment> c = comments.ofSubmission(link, TOP, -1, null);
-                        timer.split();
-                        log.info(format("comments for %s retrieved in %s", link, timer.toString()));
-                        List<com.github.jreddit.entity.Comment> cc = c.stream().flatMap(this::flattened).collect(toList());
-                        timer.stop();
-                        log.info(format("comments for %s flattened in %s", link, timer.toString()));
-
-                        return load(cc.parallelStream(), commentConverter, commentValidator);
+                        return load(comments.ofSubmission(link, null, -1, -1, -1, TOP).stream().flatMap(this::flattened), commentConverter, commentValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving comments. Trying again, iteration: %d, link: %s", i, link));
                         sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
