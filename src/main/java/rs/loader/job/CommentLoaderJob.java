@@ -51,10 +51,6 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
 
     @Scheduled(initialDelay = 20000, fixedRate = 100)
     public void load() {
-        doLoad();
-    }
-
-    public void doLoad() {
         gaugeService.submit("loader.comment.queue-size", queueSize());
 
         StopWatch timer = new StopWatch();
@@ -73,7 +69,6 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
             log.info(format("Comment queue is empty, utilise it more? Sleeping for %d seconds...", IDLE_SLEEP_IN_SECONDS));
             sleepUninterruptibly(IDLE_SLEEP_IN_SECONDS, SECONDS);
         }
-
     }
 
     Optional<Collection<Comment>> process(String link, int maxAttempts) {
