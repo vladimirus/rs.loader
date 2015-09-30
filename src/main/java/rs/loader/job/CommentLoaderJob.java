@@ -14,6 +14,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
 @Service
@@ -47,27 +49,34 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
     @Autowired
     private GaugeService gaugeService;
 
+    @Autowired
+    @Qualifier(value = "commentExecutor")
+    private Executor executor;
+
     Queue<String> queue = new LinkedList<>();
 
-    @Scheduled(initialDelay = 20000, fixedRate = 100)
+    @Scheduled(initialDelay = 20000, fixedRate = 2000)
+    public void scheduledLoad() {
+        executor.execute(this::load);
+    }
+
     public void load() {
         gaugeService.submit("loader.comment.queue-size", queueSize());
-
-        StopWatch timer = new StopWatch();
-        timer.start();
-
-        ofNullable(queue.poll())
-                .flatMap(linkId -> process(linkId, 10))
-                .filter(comments -> !comments.isEmpty())
-                .ifPresent(comments -> {
-                    timer.stop();
-                    commentManager.save(comments);
-                    log.debug(format("%20s: saved %3d comments; took: %s", comments.stream().findAny().get().getLinkId(), comments.size(), timer.toString()));
-                });
 
         if(queue.isEmpty()) {
             log.info(format("Comment queue is empty, utilise it more? Sleeping for %d seconds...", IDLE_SLEEP_IN_SECONDS));
             sleepUninterruptibly(IDLE_SLEEP_IN_SECONDS, SECONDS);
+        } else {
+            StopWatch timer = new StopWatch();
+            timer.start();
+            ofNullable(queue.poll())
+                    .flatMap(linkId -> process(linkId, 10))
+                    .filter(comments -> !comments.isEmpty())
+                    .ifPresent(comments -> {
+                        timer.stop();
+                        commentManager.save(comments);
+                        log.debug(format("%20s: saved %3d comments; took: %s", comments.stream().findAny().get().getLinkId(), comments.size(), timer.toString()));
+                    });
         }
     }
 
