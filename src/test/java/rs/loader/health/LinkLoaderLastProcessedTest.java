@@ -25,7 +25,7 @@ public class LinkLoaderLastProcessedTest {
     @Test
     public void shouldBeHealthy() {
         // when
-        given(linkLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(60));
+        given(linkLoaderJob.getLastProcessed()).willReturn(now().minusMinutes(59));
 
         // when
         Health actual = linkLoaderLastProcessed.health();

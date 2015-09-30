@@ -14,6 +14,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.concurrent.Executor;
 
 @Service
 public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
@@ -48,12 +50,17 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private CommentLoaderJob commentLoaderJob;
     @Autowired
     private AsyncEventBus eventBus;
-
+    @Autowired
+    @Qualifier(value = "linkExecutor")
+    private Executor executor;
 
     Queue<String> queue = new LinkedList<>();
 
+    @Scheduled(initialDelay = 10000, fixedRate = 1000)
+    public void scheduledLoad() {
+        executor.execute(this::load);
+    }
 
-    @Scheduled(initialDelay = 10000, fixedRate = 100)
     public void load() {
         gaugeService.submit("loader.link.queue-size", queueSize());
         if (readyToRun(commentLoaderJob.queueSize())) {

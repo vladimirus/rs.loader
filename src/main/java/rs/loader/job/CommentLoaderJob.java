@@ -48,7 +48,6 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
     private SimpleManager<Comment> commentManager;
     @Autowired
     private GaugeService gaugeService;
-
     @Autowired
     @Qualifier(value = "commentExecutor")
     private Executor executor;

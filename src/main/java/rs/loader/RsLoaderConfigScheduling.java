@@ -31,4 +31,10 @@ public class RsLoaderConfigScheduling implements SchedulingConfigurer {
     public Executor commentExecutor() {
         return newScheduledThreadPool(100);
     }
+
+    @Bean(destroyMethod = "shutdown")
+    @Qualifier(value = "linkExecutor")
+    public Executor linkExecutor() {
+        return newScheduledThreadPool(100);
+    }
 }
