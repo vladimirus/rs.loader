@@ -85,8 +85,8 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
                     try {
                         return load(comments.ofSubmission(link, null, -1, -1, -1, TOP).stream().flatMap(this::flattened), commentConverter, commentValidator);
                     } catch (Exception ignore) {
-                        log.info(format("Error retrieving comments. Trying again, iteration: %d, link: %s", i, link));
-                        sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
+                        log.info(format("Error retrieving comments: iteration: %d, link: %s. Sleeping for %d seconds then trying again", i, link, i * ERROR_SLEEP_IN_SECONDS));
+                        sleepUninterruptibly(i * ERROR_SLEEP_IN_SECONDS, SECONDS);
                         return null;
                     }
                 })

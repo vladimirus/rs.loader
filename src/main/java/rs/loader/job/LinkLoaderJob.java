@@ -91,8 +91,8 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                     try {
                         return load(submissions.ofSubreddit(topicDisplayName, HOT, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
                     } catch (Exception ignore) {
-                        log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topicDisplayName, ERROR_SLEEP_IN_SECONDS));
-                        sleepUninterruptibly(ERROR_SLEEP_IN_SECONDS, SECONDS);
+                        log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topicDisplayName, i * ERROR_SLEEP_IN_SECONDS));
+                        sleepUninterruptibly(i * ERROR_SLEEP_IN_SECONDS, SECONDS);
                         return null;
                     }
                 })
