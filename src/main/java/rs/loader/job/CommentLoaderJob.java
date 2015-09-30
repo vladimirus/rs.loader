@@ -80,8 +80,6 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
     }
 
     Optional<Collection<Comment>> process(String link, int maxAttempts) {
-        log.debug(format("Retrieving comments for link: %s", link));
-
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
