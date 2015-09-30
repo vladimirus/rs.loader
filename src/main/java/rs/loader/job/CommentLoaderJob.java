@@ -15,7 +15,6 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.GaugeService;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.loader.model.Comment;
@@ -55,7 +54,6 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
         doLoad();
     }
 
-    @Async
     public void doLoad() {
         gaugeService.submit("loader.comment.queue-size", queueSize());
 
