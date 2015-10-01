@@ -15,6 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rs.loader.TestFactory.aTopic;
+import static rs.loader.job.TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT;
 
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.retrieval.Subreddits;
@@ -56,7 +57,7 @@ public class TopicLoaderJobTest {
 
     @Before
     public void setup() {
-        TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT = 5;
+        SIZE_OF_TOPICS_TO_COLLECT = 5;
     }
 
     @Test
@@ -72,10 +73,10 @@ public class TopicLoaderJobTest {
         topicLoaderJob.load();
 
         // then
-        verify(topicConverter, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT)).convert(any(Subreddit.class));
+        verify(topicConverter, times(SIZE_OF_TOPICS_TO_COLLECT)).convert(any(Subreddit.class));
         verify(topicManager).save(anyCollectionOf(Topic.class));
-        verify(eventBus, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT)).post(isA(Topic.class));
-        verify(counterService, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
+        verify(eventBus, times(SIZE_OF_TOPICS_TO_COLLECT)).post(isA(Topic.class));
+        verify(counterService, times(SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
     }
 
     @Test
@@ -105,14 +106,14 @@ public class TopicLoaderJobTest {
         given(topicValidator.isValid(any(Topic.class))).willReturn(true);
         given(subreddits.get(any(SubredditsView.class), eq(0), eq(100), anyObject(), eq(null))).willReturn(singletonList(subreddit));
         given(topicConverter.convert(any(Subreddit.class))).willReturn(aTopic());
-        given(topicManager.get(0, 100)).willReturn(singletonList(aTopic()));
+        given(topicManager.get(0, SIZE_OF_TOPICS_TO_COLLECT)).willReturn(singletonList(aTopic()));
 
         // when
         topicLoaderJob.load();
 
         // then
         verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), isA(Subreddit.class), eq(null));
-        verify(counterService, times(TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
+        verify(counterService, times(SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
     }
 
     @Test
@@ -161,7 +162,7 @@ public class TopicLoaderJobTest {
         topicLoaderJob.initQueue();
 
         // then
-        verify(topicManager).get(0, TopicLoaderJob.SIZE_OF_TOPICS_TO_COLLECT);
+        verify(topicManager).get(0, SIZE_OF_TOPICS_TO_COLLECT);
         verify(eventBus).post(isA(Topic.class));
     }
 

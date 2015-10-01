@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @Service
 public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
-    static int SIZE_OF_TOPICS_TO_COLLECT = 3000;
+    static int SIZE_OF_TOPICS_TO_COLLECT = 100;
 
     private Logger log = Logger.getLogger(TopicLoaderJob.class);
     @Autowired
@@ -104,6 +104,6 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
     }
 
     private Collection<Topic> lastIndexedTopics() {
-        return topicManager.get(0, 100);
+        return topicManager.get(0, SIZE_OF_TOPICS_TO_COLLECT);
     }
 }
