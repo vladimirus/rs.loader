@@ -8,7 +8,7 @@ import org.junit.Test;
 public class IntegrationTest {
     @Test
     public void shouldBeHealthy() {
-        get("http://rs.loader.supr.me/manage/health")
+        get("http://loader.redditsearcher.com/manage/health")
                 .prettyPeek()
                 .then()
                 .body("status", is("UP"));
