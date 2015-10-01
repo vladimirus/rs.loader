@@ -15,7 +15,6 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.loader.model.Comment;
@@ -46,8 +45,6 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
     private Validator<Comment> commentValidator;
     @Autowired
     private SimpleManager<Comment> commentManager;
-    @Autowired
-    private GaugeService gaugeService;
     @Autowired
     @Qualifier(value = "commentExecutor")
     private Executor executor;
@@ -86,7 +83,9 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
                         return load(comments.ofSubmission(link, null, -1, -1, -1, TOP).stream().flatMap(this::flattened), commentConverter, commentValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving comments: iteration: %d, link: %s. Sleeping for %d seconds then trying again", i, link, i * ERROR_SLEEP_IN_SECONDS));
+                        counterService.increment(format("loader.%s.sleeping", this.getClass().getSimpleName().toLowerCase()));
                         sleepUninterruptibly(i * ERROR_SLEEP_IN_SECONDS, SECONDS);
+                        counterService.decrement(format("loader.%s.sleeping", this.getClass().getSimpleName().toLowerCase()));
                         return null;
                     }
                 })

@@ -15,7 +15,6 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.loader.model.Link;
@@ -44,8 +43,6 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     private Validator<Link> linkValidator;
     @Autowired
     private SimpleManager<Link> linkManager;
-    @Autowired
-    private GaugeService gaugeService;
     @Autowired
     private CommentLoaderJob commentLoaderJob;
     @Autowired
@@ -92,7 +89,9 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                         return load(submissions.ofSubreddit(topicDisplayName, HOT, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
                     } catch (Exception ignore) {
                         log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topicDisplayName, i * ERROR_SLEEP_IN_SECONDS));
+                        counterService.increment(format("loader.%s.sleeping", this.getClass().getSimpleName().toLowerCase()));
                         sleepUninterruptibly(i * ERROR_SLEEP_IN_SECONDS, SECONDS);
+                        counterService.decrement(format("loader.%s.sleeping", this.getClass().getSimpleName().toLowerCase()));
                         return null;
                     }
                 })

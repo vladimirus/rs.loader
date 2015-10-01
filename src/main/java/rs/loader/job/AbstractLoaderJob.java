@@ -7,6 +7,7 @@ import static java.util.stream.Collectors.toList;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import rs.loader.service.convert.Converter;
 import rs.loader.service.validator.Validator;
 
@@ -19,7 +20,9 @@ public abstract class AbstractLoaderJob<F, T> {
 
     private LocalDateTime lastProcessed = now();
     @Autowired
-    private CounterService counterService;
+    CounterService counterService;
+    @Autowired
+    GaugeService gaugeService;
 
     Collection<T> load(Stream<F> stream, Converter<F, T> converter, Validator<T> validator) {
         return stream.map(original -> {
