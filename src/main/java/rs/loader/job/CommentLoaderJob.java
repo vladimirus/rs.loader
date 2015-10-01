@@ -69,7 +69,7 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
             StopWatch timer = new StopWatch();
             timer.start();
             ofNullable(queue.poll())
-                    .flatMap(linkId -> process(linkId, 10))
+                    .flatMap(linkId -> process(linkId, 100))
                     .filter(comments -> !comments.isEmpty())
                     .ifPresent(comments -> {
                         timer.stop();
