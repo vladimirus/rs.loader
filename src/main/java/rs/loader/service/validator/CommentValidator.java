@@ -13,6 +13,7 @@ public class CommentValidator implements Validator<Comment>{
 
     @Override
     public boolean isValid(Comment comment) {
-        return comment.getScore() >= minScore && comment.getScore() <= maxScore;
+        return !"[deleted]".equals(comment.getBody()) && comment.getScore() >= minScore && comment.getScore() <= maxScore;
+
     }
 }

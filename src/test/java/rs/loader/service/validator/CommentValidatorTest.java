@@ -35,4 +35,19 @@ public class CommentValidatorTest {
         // then
         assertThat(actual, is(false));
     }
+
+    @Test
+    public void shouldBeValidBecauseCommentDeleted() {
+        // given
+        CommentValidator commentValidator = new CommentValidator();
+        commentValidator.minScore = 2;
+        commentValidator.maxScore = 10;
+
+        // when
+        boolean actual = commentValidator.isValid(aCommentBuilder().score(3L).body("[deleted]").build());
+
+        // then
+        assertThat(actual, is(false));
+    }
+
 }
