@@ -1,14 +1,9 @@
 package rs.loader.dao;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
-import static org.elasticsearch.search.sort.SortOrder.DESC;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.FacetedPage;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Repository;
+import rs.loader.model.Comment;
 import rs.loader.model.Topic;
 
 import java.util.Collection;
@@ -29,16 +24,15 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
 
     @Override
     public Collection<Topic> get(int pageNumber, int size) {
-
-        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(matchAllQuery())
-                .withSort(fieldSort("updated").order(DESC))
-                .withPageable(new PageRequest(pageNumber, size))
-                .withIndices(INDEX_NAME)
-                .withTypes(TYPE)
-                .build();
-
-        FacetedPage<Topic> page = template.queryForPage(searchQuery, Topic.class);
-        return page.getContent();
+        return get(RsQuery.builder()
+                .queryBuilder(matchAllQuery())
+                .clazz(Comment.class)
+                .type(TYPE)
+                .index(INDEX_NAME)
+                .sortDesc(true)
+                .sortField("updated")
+                .pageNumber(pageNumber)
+                .size(size)
+                .build());
     }
 }

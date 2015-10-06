@@ -2,10 +2,6 @@ package rs.loader.dao;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.FacetedPage;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Repository;
 import rs.loader.model.Comment;
 
@@ -27,14 +23,15 @@ public class CommentDao extends ModelDao<Comment> implements SimpleDao<Comment> 
 
     @Override
     public Collection<Comment> get(int pageNumber, int size) {
-        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(matchAllQuery())
-                .withPageable(new PageRequest(pageNumber, size))
-                .withIndices(INDEX_NAME)
-                .withTypes(TYPE)
-                .build();
-
-        FacetedPage<Comment> page = template.queryForPage(searchQuery, Comment.class);
-        return page.getContent();
+        return get(RsQuery.builder()
+                .queryBuilder(matchAllQuery())
+                .clazz(Comment.class)
+                .type(TYPE)
+                .index(INDEX_NAME)
+                .sortDesc(true)
+                .sortField("score")
+                .pageNumber(pageNumber)
+                .size(size)
+                .build());
     }
 }
