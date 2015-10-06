@@ -3,7 +3,6 @@ package rs.loader.dao;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 import org.springframework.stereotype.Repository;
-import rs.loader.model.Comment;
 import rs.loader.model.Link;
 
 import java.util.Collection;
@@ -26,7 +25,7 @@ public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
     public Collection<Link> get(int pageNumber, int size) {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
-                .clazz(Comment.class)
+                .clazz(Link.class)
                 .type(TYPE)
                 .index(INDEX_NAME)
                 .sortDesc(true)

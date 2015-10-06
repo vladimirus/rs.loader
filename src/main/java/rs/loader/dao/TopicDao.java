@@ -3,7 +3,6 @@ package rs.loader.dao;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 import org.springframework.stereotype.Repository;
-import rs.loader.model.Comment;
 import rs.loader.model.Topic;
 
 import java.util.Collection;
@@ -26,7 +25,7 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
     public Collection<Topic> get(int pageNumber, int size) {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
-                .clazz(Comment.class)
+                .clazz(Topic.class)
                 .type(TYPE)
                 .index(INDEX_NAME)
                 .sortDesc(true)
@@ -39,7 +38,7 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
     public Collection<Topic> getTop(int size) {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
-                .clazz(Comment.class)
+                .clazz(Topic.class)
                 .type(TYPE)
                 .index(INDEX_NAME)
                 .sortDesc(true)
