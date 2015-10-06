@@ -58,6 +58,7 @@ public class TopicLoaderJobTest {
     @Before
     public void setup() {
         SIZE_OF_TOPICS_TO_COLLECT = 5;
+        topicLoaderJob.enabled = true;
     }
 
     @Test

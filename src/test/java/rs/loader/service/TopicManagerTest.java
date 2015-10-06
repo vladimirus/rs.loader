@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import rs.loader.dao.SimpleDao;
+import rs.loader.dao.TopicDao;
 import rs.loader.model.Topic;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class TopicManagerTest {
     @InjectMocks
     private TopicManager topicManager;
     @Mock
-    private SimpleDao<Topic> simpleDao;
+    private TopicDao topicDao;
 
     @Test
     public void shouldSave() {
@@ -34,13 +34,13 @@ public class TopicManagerTest {
         topicManager.save(topic);
 
         // then
-        verify(simpleDao).save(topic);
+        verify(topicDao).save(topic);
     }
 
     @Test
     public void shouldGet() {
         // given
-        given(simpleDao.get(0, 10)).willReturn(asList(aTopic("1"), aTopic("1")));
+        given(topicDao.get(0, 10)).willReturn(asList(aTopic("1"), aTopic("1")));
 
         // when
         Collection<Topic> actual = topicManager.get(0, 10);
@@ -57,6 +57,18 @@ public class TopicManagerTest {
         topicManager.save(asList(aTopic("1"), aTopic("2")));
 
         // then
-        verify(simpleDao).save(anyCollectionOf(Topic.class));
+        verify(topicDao).save(anyCollectionOf(Topic.class));
+    }
+
+    @Test
+    public void shouldGetTop() {
+        // given
+        given(topicDao.getTop(10)).willReturn(asList(aTopic("1"), aTopic("1")));
+
+        // when
+        Collection<Topic> actual = topicManager.getTop(10);
+
+        // then
+        assertThat(actual, hasSize(2));
     }
 }

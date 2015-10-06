@@ -18,6 +18,7 @@ import com.google.common.eventbus.AsyncEventBus;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.loader.model.Topic;
@@ -48,9 +49,12 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
 
     private Cache<String, Topic> cache = CacheBuilder.newBuilder().expireAfterWrite(1, HOURS).build();
 
+    @Value("${rs.loader.topic.enabled:true}")
+    boolean enabled;
+
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public void load() {
-        if (readyToRun(linkLoaderJob.queueSize())) {
+        if (enabled && readyToRun(linkLoaderJob.queueSize())) {
             topicManager.save(iterate(0, i -> i + 1)
                     .mapToObj(i -> process(topicToCheck(lastIndexedTopics()), 10).orElse(emptyList()))
                     .flatMap(Collection::stream)

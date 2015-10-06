@@ -59,4 +59,18 @@ public class TopicDaoTest {
         // then
         verify(template).bulkIndex(any());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldGetTop() {
+        // given
+        FacetedPage page = mock(FacetedPage.class);
+        given(template.queryForPage(isA(SearchQuery.class), isA(Class.class))).willReturn(page);
+
+        // when
+        topicDao.getTop(10);
+
+        // then
+        verify(template).queryForPage(isA(SearchQuery.class), isA(Class.class));
+    }
 }

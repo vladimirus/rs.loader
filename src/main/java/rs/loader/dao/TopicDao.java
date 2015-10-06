@@ -35,4 +35,17 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
                 .size(size)
                 .build());
     }
+
+    public Collection<Topic> getTop(int size) {
+        return get(RsQuery.builder()
+                .queryBuilder(matchAllQuery())
+                .clazz(Comment.class)
+                .type(TYPE)
+                .index(INDEX_NAME)
+                .sortDesc(true)
+                .sortField("subscribers")
+                .pageNumber(0)
+                .size(size)
+                .build());
+    }
 }
