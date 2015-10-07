@@ -15,6 +15,7 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.loader.model.Comment;
@@ -51,9 +52,14 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
 
     Queue<String> queue = new LinkedList<>();
 
+    @Value("${rs.loader.comment.enabled:true}")
+    boolean enabled;
+
     @Scheduled(initialDelay = 20000, fixedRate = 2000)
     public void scheduledLoad() {
-        executor.execute(this::load);
+        if (enabled) {
+            executor.execute(this::load);
+        }
     }
 
     public void load() {
@@ -99,7 +105,9 @@ public class CommentLoaderJob extends AbstractLoaderJob<com.github.jreddit.entit
 
     @Subscribe
     public void handle(Link link) {
-        queue.add(link.getIdWithoutType());
+        if (enabled) {
+            queue.add(link.getIdWithoutType());
+        }
     }
 
     public int queueSize() {
