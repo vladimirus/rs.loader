@@ -9,16 +9,9 @@ import java.util.Collection;
 
 @Repository
 public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
-    private final static String TYPE = "topic";
 
-    @Override
-    public void save(Topic topic) {
-        save(topic, INDEX_NAME, TYPE);
-    }
-
-    @Override
-    public void save(Collection<Topic> collection) {
-        save(collection, INDEX_NAME, TYPE);
+    public TopicDao() {
+        super("rs", "topic");
     }
 
     @Override
@@ -26,8 +19,8 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
                 .clazz(Topic.class)
-                .type(TYPE)
-                .index(INDEX_NAME)
+                .type(getType())
+                .index(getIndexName())
                 .sortDesc(true)
                 .sortField("updated")
                 .pageNumber(pageNumber)
@@ -39,8 +32,8 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
                 .clazz(Topic.class)
-                .type(TYPE)
-                .index(INDEX_NAME)
+                .type(getType())
+                .index(getIndexName())
                 .sortDesc(true)
                 .sortField("subscribers")
                 .pageNumber(0)

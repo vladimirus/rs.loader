@@ -1,10 +1,14 @@
 package rs.loader.service;
 
+import static java.util.stream.Collectors.toList;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.loader.dao.SimpleDao;
 import rs.loader.model.Link;
+import rs.loader.model.Suggestion;
+import rs.loader.service.convert.Converter;
 
 import java.util.Collection;
 
@@ -13,6 +17,11 @@ public class LinkManager implements SimpleManager<Link> {
     private Logger log = Logger.getLogger(LinkManager.class);
     @Autowired
     private SimpleDao<Link> linkDao;
+    @Autowired
+    private SimpleDao<Suggestion> suggestionDao;
+
+    @Autowired
+    private Converter<Link, Suggestion> suggestionConverter;
 
     @Override
     public void save(Link link) {
@@ -20,8 +29,12 @@ public class LinkManager implements SimpleManager<Link> {
     }
 
     @Override
-    public void save(Collection<Link> collection) {
-        linkDao.save(collection);
+    public void save(Collection<Link> links) {
+        linkDao.save(links);
+
+        suggestionDao.save(links.stream()
+                .map(suggestionConverter::convert)
+                .collect(toList()));
     }
 
     @Override

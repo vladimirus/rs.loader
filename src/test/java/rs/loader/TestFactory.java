@@ -2,6 +2,7 @@ package rs.loader;
 
 import rs.loader.model.Comment;
 import rs.loader.model.Link;
+import rs.loader.model.Suggestion;
 import rs.loader.model.Topic;
 
 import java.util.Date;
@@ -85,5 +86,13 @@ public class TestFactory {
                 .body("body")
                 .created(new Date())
                 .score(1L);
+    }
+
+    public static Suggestion aSuggestion(String id) {
+        return Suggestion.builder()
+                .id(id)
+                .original("L'originale")
+                .suggest("original")
+                .build();
     }
 }

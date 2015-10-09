@@ -4,7 +4,9 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static rs.loader.TestFactory.aLink;
 
@@ -15,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import rs.loader.dao.SimpleDao;
 import rs.loader.model.Link;
+import rs.loader.model.Suggestion;
+import rs.loader.service.convert.Converter;
 
 import java.util.Collection;
 
@@ -23,7 +27,11 @@ public class LinkManagerTest {
     @InjectMocks
     private LinkManager linkManager;
     @Mock
-    private SimpleDao<Link> simpleDao;
+    private SimpleDao<Link> linkDao;
+    @Mock
+    private SimpleDao<Suggestion> suggestionDao;
+    @Mock
+    private Converter<Suggestion, Link> suggestionLinkConverter;
 
     @Test
     public void shouldSave() {
@@ -34,13 +42,13 @@ public class LinkManagerTest {
         linkManager.save(link);
 
         // then
-        verify(simpleDao).save(link);
+        verify(linkDao).save(link);
     }
 
     @Test
     public void shouldGet() {
         // given
-        given(simpleDao.get(0, 10)).willReturn(asList(aLink(), aLink()));
+        given(linkDao.get(0, 10)).willReturn(asList(aLink(), aLink()));
 
         // when
         Collection<Link> actual = linkManager.get(0, 10);
@@ -56,6 +64,8 @@ public class LinkManagerTest {
         linkManager.save(asList(aLink("1"), aLink("2")));
 
         // then
-        verify(simpleDao).save(anyCollectionOf(Link.class));
+        verify(linkDao).save(anyCollectionOf(Link.class));
+        verify(suggestionDao).save(anyCollectionOf(Suggestion.class));
+        verify(suggestionLinkConverter, times(2)).convert(any());
     }
 }

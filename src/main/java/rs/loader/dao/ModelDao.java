@@ -5,6 +5,7 @@ import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -20,19 +21,27 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public abstract class ModelDao<T extends Model> {
-    final static String INDEX_NAME = "rs";
+public abstract class ModelDao<T extends Model> implements SimpleDao<T>  {
+    @Getter
+    private final String indexName;
+    @Getter
+    private final String type;
 
     @Autowired
     ElasticsearchTemplate template;
 
-    void save(T item, String index, String type) {
-        template.index(indexQuery(item, index, type));
+    public ModelDao(String indexName, String type) {
+        this.indexName = indexName;
+        this.type = type;
     }
 
-    void save(Collection<T> collection, String index, String type) {
+    public void save(T item) {
+        template.index(indexQuery(item, indexName, type));
+    }
+
+    public void save(Collection<T> collection) {
         List<IndexQuery> queries = collection.stream()
-                .map(item -> indexQuery(item, index, type))
+                .map(item -> indexQuery(item, indexName, type))
                 .collect(toList());
 
         if (!queries.isEmpty()) {
@@ -40,7 +49,7 @@ public abstract class ModelDao<T extends Model> {
         }
     }
 
-    IndexQuery indexQuery(T item, String index, String type) {
+    public IndexQuery indexQuery(T item, String index, String type) {
         return new IndexQueryBuilder()
                 .withObject(item)
                 .withId(item.getId())

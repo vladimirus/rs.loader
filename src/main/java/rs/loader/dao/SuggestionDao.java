@@ -3,26 +3,26 @@ package rs.loader.dao;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 import org.springframework.stereotype.Repository;
-import rs.loader.model.Comment;
+import rs.loader.model.Suggestion;
 
 import java.util.Collection;
 
 @Repository
-public class CommentDao extends ModelDao<Comment> implements SimpleDao<Comment> {
+public class SuggestionDao extends ModelDao<Suggestion> implements SimpleDao<Suggestion> {
 
-    public CommentDao() {
-        super("rs", "comment");
+    public SuggestionDao() {
+        super("rs", "suggestion");
     }
 
     @Override
-    public Collection<Comment> get(int pageNumber, int size) {
+    public Collection<Suggestion> get(int pageNumber, int size) {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
-                .clazz(Comment.class)
+                .clazz(Suggestion.class)
                 .type(getType())
                 .index(getIndexName())
                 .sortDesc(true)
-                .sortField("score")
+                .sortField("original")
                 .pageNumber(pageNumber)
                 .size(size)
                 .build());
