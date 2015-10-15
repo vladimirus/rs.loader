@@ -2,6 +2,7 @@ package rs.loader.dao;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
+import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.springframework.stereotype.Repository;
 import rs.loader.model.Suggestion;
 
@@ -25,6 +26,19 @@ public class SuggestionDao extends ModelDao<Suggestion> implements SimpleDao<Sug
                 .sortField("original")
                 .pageNumber(pageNumber)
                 .size(size)
+                .build());
+    }
+
+    public Collection<Suggestion> getById(String id) {
+        return get(RsQuery.builder()
+                .queryBuilder(new IdsQueryBuilder(getType()).ids(id))
+                .clazz(Suggestion.class)
+                .type(getType())
+                .index(getIndexName())
+                .sortDesc(true)
+                .sortField("original")
+                .pageNumber(0)
+                .size(1)
                 .build());
     }
 }

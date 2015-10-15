@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import rs.loader.dao.SimpleDao;
 import rs.loader.model.Link;
 import rs.loader.model.Suggestion;
-import rs.loader.service.convert.Converter;
+import rs.loader.service.convert.SuggestionConverter;
 
 import java.util.Collection;
 
@@ -21,7 +21,7 @@ public class LinkManager implements SimpleManager<Link> {
     private SimpleDao<Suggestion> suggestionDao;
 
     @Autowired
-    private Converter<Link, Suggestion> suggestionConverter;
+    private SuggestionConverter suggestionConverter;
 
     @Override
     public void save(Link link) {
@@ -33,7 +33,7 @@ public class LinkManager implements SimpleManager<Link> {
         linkDao.save(links);
 
         suggestionDao.save(links.stream()
-                .map(suggestionConverter::convert)
+                .flatMap(link -> suggestionConverter.convert(link).stream())
                 .collect(toList()));
     }
 

@@ -17,11 +17,11 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @ToString
 @EqualsAndHashCode
 @Document(indexName = "test")
-public class Suggestion implements Model {
+public class Suggest  {
     @NonNull
-    private String id;
+    private String input;
     @NonNull
-    private String original;
+    private String output;
     @NonNull
-    private Suggest suggest;
+    private Integer weight;
 }

@@ -2,6 +2,7 @@ package rs.loader;
 
 import rs.loader.model.Comment;
 import rs.loader.model.Link;
+import rs.loader.model.Suggest;
 import rs.loader.model.Suggestion;
 import rs.loader.model.Topic;
 
@@ -92,7 +93,7 @@ public class TestFactory {
         return Suggestion.builder()
                 .id(id)
                 .original("L'originale")
-                .suggest("original")
+                .suggest(Suggest.builder().input("in").output("out").weight(1).build())
                 .build();
     }
 }

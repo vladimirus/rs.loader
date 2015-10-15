@@ -18,7 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import rs.loader.dao.SimpleDao;
 import rs.loader.model.Link;
 import rs.loader.model.Suggestion;
-import rs.loader.service.convert.Converter;
+import rs.loader.service.convert.SuggestionConverter;
 
 import java.util.Collection;
 
@@ -31,7 +31,7 @@ public class LinkManagerTest {
     @Mock
     private SimpleDao<Suggestion> suggestionDao;
     @Mock
-    private Converter<Suggestion, Link> suggestionLinkConverter;
+    private SuggestionConverter suggestionLinkConverter;
 
     @Test
     public void shouldSave() {

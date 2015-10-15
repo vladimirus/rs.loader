@@ -47,7 +47,7 @@ curl -XPUT "http://localhost:9200/rs/_mapping/suggestion" -d '
       "suggest" : {
         "type" :            "completion",
         "index_analyzer" :  "english",
-        "search_analyzer" : "english",
+        "search_analyzer" : "standard",
         "preserve_position_increments": false,
         "preserve_separators": false
       }
