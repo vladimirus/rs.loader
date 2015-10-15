@@ -33,10 +33,22 @@ public class SuggestionConverterTest {
         given(suggestionDao.getById(anyString())).willReturn(singletonList(aSuggestion("123")));
 
         // when
-        Collection<Suggestion> actual = suggestionConverter.convert(aLinkBuilder().title("this is test's one 2").build());
+        Collection<Suggestion> actual = suggestionConverter.convert(aLinkBuilder().title("why this is test's one 2").build());
 
         // then
-        assertThat(actual, hasSize(3));
+        assertThat(actual, hasSize(4));
+    }
+
+    @Test
+    public void shouldConvertWithExtra() {
+        // given
+        given(suggestionDao.getById(anyString())).willReturn(singletonList(aSuggestion("123")));
+
+        // when
+        Collection<Suggestion> actual = suggestionConverter.convert(aLinkBuilder().title("Why this is test's one 2").build());
+
+        // then
+        assertThat(actual, hasSize(5));
     }
 
     @Test
