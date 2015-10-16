@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 curl -XDELETE "http://localhost:9200/rs/"
 
 curl -XPUT "http://localhost:9200/rs/"
@@ -39,9 +41,11 @@ curl -XPUT "http://localhost:9200/rs/_mapping/link" -d'
   }
 }'
 
+# curl -XDELETE "http://localhost:9200/rs/_mapping/suggestion"
 curl -XPUT "http://localhost:9200/rs/_mapping/suggestion" -d '
 {
   "suggestion" : {
+    "_ttl" : { "enabled" : true, "default" : "6w" },
     "properties" : {
       "original" : { "type" : "string" },
       "suggest" : {
