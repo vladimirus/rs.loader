@@ -7,6 +7,7 @@ import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.FacetedPage;
@@ -23,15 +24,14 @@ import java.util.List;
 @Repository
 public abstract class ModelDao<T extends Model> implements SimpleDao<T>  {
     @Getter
-    private final String indexName;
-    @Getter
     private final String type;
+    @Value("${rs.index.name:rs}")
+    String indexName;
 
     @Autowired
     ElasticsearchTemplate template;
 
-    public ModelDao(String indexName, String type) {
-        this.indexName = indexName;
+    public ModelDao(String type) {
         this.type = type;
     }
 

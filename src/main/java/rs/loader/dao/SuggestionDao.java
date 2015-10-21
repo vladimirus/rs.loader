@@ -12,7 +12,7 @@ import java.util.Collection;
 public class SuggestionDao extends ModelDao<Suggestion> implements SimpleDao<Suggestion> {
 
     public SuggestionDao() {
-        super("rs", "suggestion");
+        super("suggestion");
     }
 
     @Override
@@ -21,7 +21,7 @@ public class SuggestionDao extends ModelDao<Suggestion> implements SimpleDao<Sug
                 .queryBuilder(matchAllQuery())
                 .clazz(Suggestion.class)
                 .type(getType())
-                .index(getIndexName())
+                .index(indexName)
                 .sortDesc(true)
                 .sortField("original")
                 .pageNumber(pageNumber)
@@ -34,7 +34,7 @@ public class SuggestionDao extends ModelDao<Suggestion> implements SimpleDao<Sug
                 .queryBuilder(new IdsQueryBuilder(getType()).ids(id))
                 .clazz(Suggestion.class)
                 .type(getType())
-                .index(getIndexName())
+                .index(indexName)
                 .sortDesc(true)
                 .sortField("original")
                 .pageNumber(0)

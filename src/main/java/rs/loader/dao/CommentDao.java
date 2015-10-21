@@ -11,7 +11,7 @@ import java.util.Collection;
 public class CommentDao extends ModelDao<Comment> implements SimpleDao<Comment> {
 
     public CommentDao() {
-        super("rs", "comment");
+        super("comment");
     }
 
     @Override
@@ -20,7 +20,7 @@ public class CommentDao extends ModelDao<Comment> implements SimpleDao<Comment> 
                 .queryBuilder(matchAllQuery())
                 .clazz(Comment.class)
                 .type(getType())
-                .index(getIndexName())
+                .index(indexName)
                 .sortDesc(true)
                 .sortField("score")
                 .pageNumber(pageNumber)

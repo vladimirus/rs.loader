@@ -11,7 +11,7 @@ import java.util.Collection;
 public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
 
     public LinkDao() {
-        super("rs", "link");
+        super("link");
     }
 
     @Override
@@ -20,7 +20,7 @@ public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
                 .queryBuilder(matchAllQuery())
                 .clazz(Link.class)
                 .type(getType())
-                .index(getIndexName())
+                .index(indexName)
                 .sortDesc(true)
                 .sortField("score")
                 .pageNumber(pageNumber)

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static rs.loader.TestFactory.aComment;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,11 @@ public class CommentDaoTest {
     private CommentDao commentDao;
     @Mock
     private ElasticsearchTemplate template;
+
+    @Before
+    public void setup() {
+        commentDao.indexName = "rs";
+    }
 
     @Test
     public void shouldSave() {

@@ -11,7 +11,7 @@ import java.util.Collection;
 public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
 
     public TopicDao() {
-        super("rs", "topic");
+        super("topic");
     }
 
     @Override
@@ -20,7 +20,7 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
                 .queryBuilder(matchAllQuery())
                 .clazz(Topic.class)
                 .type(getType())
-                .index(getIndexName())
+                .index(indexName)
                 .sortDesc(true)
                 .sortField("updated")
                 .pageNumber(pageNumber)
@@ -33,7 +33,7 @@ public class TopicDao extends ModelDao<Topic> implements SimpleDao<Topic> {
                 .queryBuilder(matchAllQuery())
                 .clazz(Topic.class)
                 .type(getType())
-                .index(getIndexName())
+                .index(indexName)
                 .sortDesc(true)
                 .sortField("subscribers")
                 .pageNumber(0)

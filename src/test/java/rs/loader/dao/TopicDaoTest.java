@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static rs.loader.TestFactory.aTopic;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,6 +26,11 @@ public class TopicDaoTest {
     private TopicDao topicDao;
     @Mock
     private ElasticsearchTemplate template;
+
+    @Before
+    public void setup() {
+        topicDao.indexName = "rs";
+    }
 
     @Test
     public void shouldSave() {
