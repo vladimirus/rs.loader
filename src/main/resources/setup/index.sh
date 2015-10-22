@@ -62,6 +62,11 @@ curl -XPUT "http://localhost:9200/rs2/_mapping/link" -d'
       },
       "created": {
         "type": "date"
+      },
+      "comments.body": {
+        "type": "string",
+        "index_analyzer": "ngram_analyzer",
+        "search_analyzer": "standard"
       }
     }
   }

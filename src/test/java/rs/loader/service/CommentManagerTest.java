@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import rs.loader.dao.LinkDao;
 import rs.loader.dao.SimpleDao;
 import rs.loader.model.Comment;
 
@@ -24,6 +25,8 @@ public class CommentManagerTest {
     private CommentManager commentManager;
     @Mock
     private SimpleDao<Comment> simpleDao;
+    @Mock
+    private LinkDao linkDao;
 
     @Test
     public void shouldSave() {
@@ -35,6 +38,7 @@ public class CommentManagerTest {
 
         // then
         verify(simpleDao).save(comment);
+        verify(linkDao).updateComments(anyCollectionOf(Comment.class));
     }
 
     @Test
@@ -57,5 +61,6 @@ public class CommentManagerTest {
 
         // then
         verify(simpleDao).save(anyCollectionOf(Comment.class));
+        verify(linkDao).updateComments(anyCollectionOf(Comment.class));
     }
 }

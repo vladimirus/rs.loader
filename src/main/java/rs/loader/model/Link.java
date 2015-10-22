@@ -8,9 +8,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 @NoArgsConstructor //this needed for ES
@@ -52,6 +55,9 @@ public class Link implements Model {
     private String selfText;
     private String selfTextHtml;
     private String domain;
+
+    @Setter
+    private Collection<Comment> comments = new ArrayList<>();
 
     public String getIdWithoutType() {
         return Splitter.on("_")
