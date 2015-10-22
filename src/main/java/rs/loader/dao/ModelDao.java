@@ -25,7 +25,7 @@ import java.util.List;
 public abstract class ModelDao<T extends Model> implements SimpleDao<T>  {
     @Getter
     private final String type;
-    @Value("${rs.index.name:rs}")
+    @Value("${rs.index.name}")
     String indexName;
 
     @Autowired
