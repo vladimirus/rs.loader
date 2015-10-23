@@ -23,9 +23,9 @@ public class RsLoaderConfig {
     public RequestConfig requestConfig() {
         return RequestConfig.custom()
                 .setCookieSpec(IGNORE_COOKIES)
-                .setSocketTimeout(60000)
-                .setConnectionRequestTimeout(60000)
-                .setConnectTimeout(60000)
+                .setSocketTimeout(300000)
+                .setConnectionRequestTimeout(300000)
+                .setConnectTimeout(300000)
                 .setMaxRedirects(10)
                 .build();
     }
