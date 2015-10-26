@@ -93,6 +93,7 @@ public class SuggestionConverter {
     private AtomicInteger retrieveSuggestion(String s) {
         return new AtomicInteger(suggestionDao.getById(s).stream()
                 .map(suggest -> suggest.getSuggest().getWeight())
+                .filter(weight -> weight < 2000000000)
                 .findAny().orElse(0));
     }
 }
