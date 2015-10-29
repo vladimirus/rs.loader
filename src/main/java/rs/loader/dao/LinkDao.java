@@ -1,6 +1,7 @@
 package rs.loader.dao;
 
 import static java.util.stream.Collectors.toList;
+import static org.elasticsearch.index.query.FilterBuilders.missingFilter;
 import static org.elasticsearch.index.query.QueryBuilders.idsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
@@ -28,6 +29,20 @@ public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
                 .sortField("score")
                 .pageNumber(pageNumber)
                 .size(size)
+                .build());
+    }
+
+    public Collection<Link> getMissingComments(int pageNumber, int size) {
+        return get(RsQuery.builder()
+                .queryBuilder(matchAllQuery())
+                .clazz(Link.class)
+                .type(getType())
+                .index(indexName)
+                .sortDesc(true)
+                .sortField("score")
+                .pageNumber(pageNumber)
+                .size(size)
+                .filter(missingFilter("comments"))
                 .build());
     }
 

@@ -62,6 +62,7 @@ public abstract class ModelDao<T extends Model> implements SimpleDao<T>  {
     public Collection<T> get(RsQuery query) {
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(query.getQueryBuilder())
+                .withFilter(query.getFilter())
                 .withSort(fieldSort(query.getSortField()).order(query.getSortDesc() ? DESC : ASC))
                 .withPageable(new PageRequest(query.getPageNumber(), query.getSize()))
                 .withIndices(query.getIndex())

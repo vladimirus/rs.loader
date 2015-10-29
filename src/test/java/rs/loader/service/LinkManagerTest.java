@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import rs.loader.dao.LinkDao;
 import rs.loader.dao.SimpleDao;
 import rs.loader.model.Link;
 import rs.loader.model.Suggestion;
@@ -27,7 +28,7 @@ public class LinkManagerTest {
     @InjectMocks
     private LinkManager linkManager;
     @Mock
-    private SimpleDao<Link> linkDao;
+    private LinkDao linkDao;
     @Mock
     private SimpleDao<Suggestion> suggestionDao;
     @Mock
@@ -67,5 +68,17 @@ public class LinkManagerTest {
         verify(linkDao).save(anyCollectionOf(Link.class));
         verify(suggestionDao).save(anyCollectionOf(Suggestion.class));
         verify(suggestionLinkConverter, times(2)).convert(any());
+    }
+
+    @Test
+    public void shouldGetMissingComments() {
+        // given
+        given(linkDao.getMissingComments(0, 10)).willReturn(asList(aLink(), aLink()));
+
+        // when
+        Collection<Link> actual = linkManager.getMissingComments(0, 10);
+
+        // then
+        assertThat(actual, hasSize(2));
     }
 }

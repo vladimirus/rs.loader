@@ -3,6 +3,7 @@ package rs.loader.dao;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
 @Builder
@@ -24,4 +25,5 @@ public class RsQuery {
     private String sortField;
     @NonNull
     private Boolean sortDesc;
+    private FilterBuilder filter;
 }

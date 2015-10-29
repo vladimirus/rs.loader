@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rs.loader.dao.LinkDao;
 import rs.loader.dao.SimpleDao;
 import rs.loader.model.Link;
 import rs.loader.model.Suggestion;
@@ -16,7 +17,7 @@ import java.util.Collection;
 public class LinkManager implements SimpleManager<Link> {
     private Logger log = Logger.getLogger(LinkManager.class);
     @Autowired
-    private SimpleDao<Link> linkDao;
+    private LinkDao linkDao;
     @Autowired
     private SimpleDao<Suggestion> suggestionDao;
 
@@ -40,5 +41,9 @@ public class LinkManager implements SimpleManager<Link> {
     @Override
     public Collection<Link> get(int pageNumber, int size) {
         return linkDao.get(pageNumber, size);
+    }
+
+    public Collection<Link> getMissingComments(int pageNumber, int size) {
+        return linkDao.getMissingComments(pageNumber, size);
     }
 }
