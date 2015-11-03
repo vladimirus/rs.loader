@@ -25,6 +25,10 @@ public class LinkConverter implements Converter<Submission, Link> {
                 .self(submission.isSelf())
                 .nsfw(submission.isNSFW())
                 .hidden(submission.isHidden())
+                .domain(submission.getDomain())
+                .selfText(submission.getSelftext())
+                .selfTextHtml(submission.getSelftextHTML())
+                .thumbnail(submission.getThumbnail())
                 .build();
     }
 }
