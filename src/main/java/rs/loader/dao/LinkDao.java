@@ -33,6 +33,10 @@ public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
     }
 
     public Collection<Link> getMissingComments(int pageNumber, int size) {
+        return getMissing(pageNumber, size, "comments");
+    }
+
+    public Collection<Link> getMissing(int pageNumber, int size, String field) {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
                 .clazz(Link.class)
@@ -42,7 +46,7 @@ public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
                 .sortField("score")
                 .pageNumber(pageNumber)
                 .size(size)
-                .filter(missingFilter("comments"))
+                .filter(missingFilter(field))
                 .build());
     }
 
