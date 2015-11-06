@@ -13,8 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import rs.loader.dao.LinkDao;
-import rs.loader.dao.SimpleDao;
+import rs.loader.dao.CommentDao;
 import rs.loader.model.Comment;
 
 import java.util.Collection;
@@ -24,9 +23,7 @@ public class CommentManagerTest {
     @InjectMocks
     private CommentManager commentManager;
     @Mock
-    private SimpleDao<Comment> simpleDao;
-    @Mock
-    private LinkDao linkDao;
+    private CommentDao commentDao;
 
     @Test
     public void shouldSave() {
@@ -37,14 +34,13 @@ public class CommentManagerTest {
         commentManager.save(comment);
 
         // then
-        verify(simpleDao).save(comment);
-        verify(linkDao).updateComments(anyCollectionOf(Comment.class));
+        verify(commentDao).save(comment);
     }
 
     @Test
     public void shouldGet() {
         // given
-        given(simpleDao.get(0, 10)).willReturn(asList(aComment("1"), aComment("2")));
+        given(commentDao.get(0, 10)).willReturn(asList(aComment("1"), aComment("2")));
 
         // when
         Collection<Comment> actual = commentManager.get(0, 10);
@@ -60,7 +56,16 @@ public class CommentManagerTest {
         commentManager.save(asList(aComment("1"), aComment("2")));
 
         // then
-        verify(simpleDao).save(anyCollectionOf(Comment.class));
-        verify(linkDao).updateComments(anyCollectionOf(Comment.class));
+        verify(commentDao).save(anyCollectionOf(Comment.class));
+    }
+
+    @Test
+    public void shouldGetForLinkId() {
+
+        // when
+        commentManager.getCommentsForLinkId("linkId");
+
+        // then
+        verify(commentDao).getCommentsForLinkId(0, 100000, "linkId");
     }
 }

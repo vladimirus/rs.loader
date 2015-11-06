@@ -162,6 +162,11 @@ curl -XPUT "http://localhost:9200/rs3/_mapping/link" -d'
       "comments.score": {
         "type": "integer",
         "index": "not_analyzed"
+      },
+      "commentsBody": {
+        "type": "string",
+        "index_analyzer": "ngram_analyzer",
+        "search_analyzer": "standard"
       }
     }
   }

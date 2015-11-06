@@ -1,5 +1,6 @@
 package rs.loader.dao;
 
+import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,20 @@ public class CommentDao extends ModelDao<Comment> implements SimpleDao<Comment> 
                 .sortField("score")
                 .pageNumber(pageNumber)
                 .size(size)
+                .build());
+    }
+
+    public Collection<Comment> getCommentsForLinkId(int pageNumber, int size, String linkId) {
+        return get(RsQuery.builder()
+                .queryBuilder(matchAllQuery())
+                .clazz(Comment.class)
+                .type(getType())
+                .index(indexName)
+                .sortDesc(true)
+                .sortField("score")
+                .pageNumber(pageNumber)
+                .size(size)
+                .filter(termFilter("linkId", linkId))
                 .build());
     }
 }

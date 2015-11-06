@@ -58,6 +58,8 @@ public class Link implements Model {
 
     @Setter
     private Collection<Comment> comments = new ArrayList<>();
+    @Setter
+    private String commentsBody;
 
     public String getIdWithoutType() {
         return Splitter.on("_")
