@@ -1,6 +1,5 @@
 package rs.loader.service;
 
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import org.apache.log4j.Logger;
@@ -48,10 +47,9 @@ public class LinkManager implements SimpleManager<Link> {
                         .map(Comment::getBody)
                         .reduce((a, b) -> a + " " + b).orElse("")
         );
-        comments.stream()
+        link.setComments(comments.stream()
                 .limit(1)
-                .peek(comment -> link.setComments(singletonList(comment)))
-                .findAny().orElse(null);
+                .collect(toList()));
         return link;
     }
 
