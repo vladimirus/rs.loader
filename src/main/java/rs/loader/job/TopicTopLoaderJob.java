@@ -24,7 +24,7 @@ public class TopicTopLoaderJob {
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public void load() {
-        if (enabled && linkLoaderJob.queueSize() <= 0) {
+        if (enabled && linkLoaderJob.queueSize() <= 10) {
             log.debug("Staring TopicTopLoaderJob");
             topicManager.getTop(SIZE_OF_TOPICS_TO_COLLECT).stream().forEach(eventBus::post);
         }
