@@ -66,7 +66,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
             timer.start();
 
             ofNullable(queue.poll())
-                    .flatMap(topicDisplayName -> process(topicDisplayName, 200))
+                    .flatMap(topicDisplayName -> process(topicDisplayName, 100))
                     .filter(links -> !links.isEmpty())
                     .ifPresent(links -> {
                         timer.stop();
