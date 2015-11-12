@@ -72,7 +72,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                     .ifPresent(links -> {
                         timer.stop();
                         linkManager.save(links);
-                        log.debug(format("%20s: saved %3d links; took: %s", links.stream().findAny().get().getTopic(), links.size(), timer.toString()));
+                        log.info(format("%20s: saved %3d links; took: %s", links.stream().findAny().get().getTopic(), links.size(), timer.toString()));
                         links.stream().forEach(eventBus::post);
                     });
 
@@ -84,7 +84,7 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
     }
 
     Optional<Collection<Link>> process(String topicDisplayName, int maxAttempts) {
-        return rangeClosed(1, maxAttempts)
+        Optional<Collection<Link>> retrievedLinks = rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
                     try {
                         return load(submissions.ofSubreddit(topicDisplayName, HOT, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
@@ -102,6 +102,12 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                 })
                 .filter(links -> links != null)
                 .findAny();
+
+        if (retrievedLinks.isPresent() && retrievedLinks.get().isEmpty()) {
+            log.info(format("%20s: retrieved %3d links", topicDisplayName, 0));
+        }
+
+        return retrievedLinks;
     }
 
     @Subscribe
