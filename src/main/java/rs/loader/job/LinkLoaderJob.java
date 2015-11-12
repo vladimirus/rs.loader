@@ -24,6 +24,7 @@ import rs.loader.service.convert.Converter;
 import rs.loader.service.validator.Validator;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
@@ -88,6 +89,10 @@ public class LinkLoaderJob extends AbstractLoaderJob<Submission, Link> {
                     try {
                         return load(submissions.ofSubreddit(topicDisplayName, HOT, -1, 100, null, null, true).stream(), linkConverter, linkValidator);
                     } catch (Exception ignore) {
+                        if (ignore.getMessage().contains("HTTP Error (403)")) {
+                            log.info(format("Error retrieving links: iteration: %d, topic: %s. Topic is private, ignoring", i, topicDisplayName));
+                            return Collections.<Link>emptyList();
+                        }
                         log.info(format("Error retrieving links: iteration: %d, topic: %s. Sleeping for %d seconds then trying again", i, topicDisplayName, i * ERROR_SLEEP_IN_SECONDS));
                         counterService.increment(format("loader.%s.sleeping", this.getClass().getSimpleName().toLowerCase()));
                         sleepUninterruptibly(i * ERROR_SLEEP_IN_SECONDS, SECONDS);
