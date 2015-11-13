@@ -41,7 +41,7 @@ public class LinkManager implements SimpleManager<Link> {
     }
 
     private Link populateLink(Link link) {
-        Collection<Comment> comments = commentManager.getCommentsForLinkId(link.getId());
+        Collection<Comment> comments = commentManager.getCommentsForLinkId(link.getId(), 1);
 //        link.setCommentsBody(
 //                comments.stream()
 //                        .map(Comment::getBody)

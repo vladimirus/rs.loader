@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,7 +48,7 @@ public class LinkManagerTest {
 
         // then
         verify(linkDao).save(link);
-        verify(commentManager).getCommentsForLinkId(anyString());
+        verify(commentManager).getCommentsForLinkId(anyString(), anyInt());
     }
 
     @Test
@@ -72,7 +73,7 @@ public class LinkManagerTest {
         verify(linkDao).save(anyCollectionOf(Link.class));
         verify(suggestionDao).save(anyCollectionOf(Suggestion.class));
         verify(suggestionLinkConverter, times(2)).convert(any());
-        verify(commentManager, times(2)).getCommentsForLinkId(anyString());
+        verify(commentManager, times(2)).getCommentsForLinkId(anyString(), anyInt());
     }
 
     @Test

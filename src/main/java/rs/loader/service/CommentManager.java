@@ -29,7 +29,7 @@ public class CommentManager implements SimpleManager<Comment> {
         return commentDao.get(pageNumber, size);
     }
 
-    public Collection<Comment> getCommentsForLinkId(String linkId) {
-        return commentDao.getCommentsForLinkId(0, 100000, linkId);
+    public Collection<Comment> getCommentsForLinkId(String linkId, int size) {
+        return commentDao.getCommentsForLinkId(0, size, linkId);
     }
 }

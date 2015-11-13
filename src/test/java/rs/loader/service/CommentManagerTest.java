@@ -63,7 +63,7 @@ public class CommentManagerTest {
     public void shouldGetForLinkId() {
 
         // when
-        commentManager.getCommentsForLinkId("linkId");
+        commentManager.getCommentsForLinkId("linkId", 100000);
 
         // then
         verify(commentDao).getCommentsForLinkId(0, 100000, "linkId");
