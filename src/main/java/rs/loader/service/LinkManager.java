@@ -42,11 +42,11 @@ public class LinkManager implements SimpleManager<Link> {
 
     private Link populateLink(Link link) {
         Collection<Comment> comments = commentManager.getCommentsForLinkId(link.getId());
-        link.setCommentsBody(
-                comments.stream()
-                        .map(Comment::getBody)
-                        .reduce((a, b) -> a + " " + b).orElse("")
-        );
+//        link.setCommentsBody(
+//                comments.stream()
+//                        .map(Comment::getBody)
+//                        .reduce((a, b) -> a + " " + b).orElse("")
+//        );
         link.setComments(comments.stream()
                 .limit(1)
                 .collect(toList()));
