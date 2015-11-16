@@ -54,8 +54,8 @@ public class Link implements Model {
     private String thumbnail;
     private String selfText;
     private String selfTextHtml;
+    @Setter
     private String domain;
-
     @Setter
     private Collection<Comment> comments = new ArrayList<>();
     @Setter

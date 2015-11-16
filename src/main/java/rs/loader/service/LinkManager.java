@@ -61,4 +61,8 @@ public class LinkManager implements SimpleManager<Link> {
     public Collection<Link> getMissingComments(int pageNumber, int size) {
         return linkDao.getMissingComments(pageNumber, size);
     }
+
+    public Collection<Link> getMissingDomains(int pageNumber, int size) {
+        return linkDao.getMissingDomains(pageNumber, size);
+    }
 }

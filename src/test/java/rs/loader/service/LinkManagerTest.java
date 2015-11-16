@@ -87,4 +87,16 @@ public class LinkManagerTest {
         // then
         assertThat(actual, hasSize(2));
     }
+
+    @Test
+    public void shouldGetMissingDomain() {
+        // given
+        given(linkDao.getMissingDomains(0, 10)).willReturn(asList(aLink(), aLink()));
+
+        // when
+        Collection<Link> actual = linkManager.getMissingDomains(0, 10);
+
+        // then
+        assertThat(actual, hasSize(2));
+    }
 }

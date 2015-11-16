@@ -36,6 +36,10 @@ public class LinkDao extends ModelDao<Link> implements SimpleDao<Link> {
         return getMissing(pageNumber, size, "comments");
     }
 
+    public Collection<Link> getMissingDomains(int pageNumber, int size) {
+        return getMissing(pageNumber, size, "domain");
+    }
+
     public Collection<Link> getMissing(int pageNumber, int size, String field) {
         return get(RsQuery.builder()
                 .queryBuilder(matchAllQuery())
