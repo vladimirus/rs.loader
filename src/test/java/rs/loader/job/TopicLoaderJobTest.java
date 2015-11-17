@@ -77,7 +77,7 @@ public class TopicLoaderJobTest {
         verify(topicConverter, times(SIZE_OF_TOPICS_TO_COLLECT)).convert(any(Subreddit.class));
         verify(topicManager).save(anyCollectionOf(Topic.class));
         verify(eventBus, times(SIZE_OF_TOPICS_TO_COLLECT)).post(isA(Topic.class));
-        verify(counterService, times(SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
+        verify(counterService, times(SIZE_OF_TOPICS_TO_COLLECT * 3)).increment(anyString());
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TopicLoaderJobTest {
 
         // then
         verify(subreddits).get(any(SubredditsView.class), eq(0), eq(100), isA(Subreddit.class), eq(null));
-        verify(counterService, times(SIZE_OF_TOPICS_TO_COLLECT * 2)).increment(anyString());
+        verify(counterService, times(SIZE_OF_TOPICS_TO_COLLECT * 2 + 4)).increment(anyString());
     }
 
     @Test
@@ -151,32 +151,5 @@ public class TopicLoaderJobTest {
 
         // then
         assertThat(actual, is(false));
-    }
-
-    @Test
-    public void shouldInitQueue() {
-        // given
-        given(linkLoaderJob.queueSize()).willReturn(0);
-        given(topicManager.get(isA(Integer.class), isA(Integer.class))).willReturn(singletonList(aTopic()));
-
-        // when
-        topicLoaderJob.initQueue();
-
-        // then
-        verify(topicManager).get(0, SIZE_OF_TOPICS_TO_COLLECT);
-        verify(eventBus).post(isA(Topic.class));
-    }
-
-    @Test
-    public void shouldNotInitQueue() {
-        // given
-        given(linkLoaderJob.queueSize()).willReturn(1);
-
-        // when
-        topicLoaderJob.initQueue();
-
-        // then
-        verify(topicManager, never()).get(isA(Integer.class), isA(Integer.class));
-        verify(eventBus, never()).post(isA(Topic.class));
     }
 }

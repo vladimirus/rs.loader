@@ -64,15 +64,13 @@ public class TopicLoaderJob extends AbstractLoaderJob<Subreddit, Topic> {
         }
     }
 
-//    @Scheduled(initialDelay = 3000, fixedRate = 609999999) //once a week, or during start
-    public void initQueue() {
-        if (linkLoaderJob.queueSize() <= 0) {
-            topicManager.get(0, SIZE_OF_TOPICS_TO_COLLECT).stream().forEach(eventBus::post);
-        }
-    }
-
     Optional<Collection<Topic>> process(Optional<Topic> startTopic, int maxAttempts) {
-        startTopic.ifPresent(topic -> log.debug(format("Retrieving topics, start-topic-name: %s (%s)", topic.getDisplayName(), topic.getId())));
+        if (startTopic.isPresent()) {
+            log.debug(format("Retrieving topics, start-topic-name: %s (%s)", startTopic.get().getDisplayName(), startTopic.get().getId()));
+        } else {
+            log.debug("Retrieving topics, starting from the beginning");
+            counterService.increment("counter.loader.topic.iteration");
+        }
 
         return rangeClosed(1, maxAttempts)
                 .mapToObj(i -> {
