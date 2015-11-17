@@ -1,9 +1,11 @@
 package rs.loader.job;
 
+import static com.google.common.collect.Iterables.getFirst;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
+import com.google.common.base.Splitter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +15,6 @@ import rs.loader.model.Link;
 import rs.loader.service.LinkManager;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 @Service
 public class MissingDomainsLoaderJob {
@@ -49,10 +50,18 @@ public class MissingDomainsLoaderJob {
 
     String getDomain(String url) {
         try {
-            URI uri = new URI(url);
-            return uri.getHost();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+            return new URI(url).getHost();
+        } catch (Exception e) {
+            return getDomainFallback(url);
+        }
+    }
+
+    private String getDomainFallback(String url) {
+        try {
+            url = url.replaceFirst("^(http://|https://)", "");
+            return getFirst(Splitter.on("/").split(url), null);
+        } catch (Exception e) {
+            log.error("Can't get domain!", e);
         }
         return null;
     }

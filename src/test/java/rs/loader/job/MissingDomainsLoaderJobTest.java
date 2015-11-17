@@ -63,4 +63,13 @@ public class MissingDomainsLoaderJobTest {
         //then
         verify(linkManager, never()).getMissingDomains(0, 1000);
     }
+
+    @Test
+    public void shouldGetDomain() {
+        // when
+        String actual = missingDomainsLoaderJob.getDomain("http://smile.amazon.com/gp/product/B003CMWX0S?ref_=sr_1_5&amp;s=apparel&amp;tag=tor0b-20&amp;qid=1444253156&amp;sr=1-5&amp;nodeID=7147441011&amp;keywords=winter gloves&amp;pldnSite=1");
+
+        // then
+        assertThat(actual, is("smile.amazon.com"));
+    }
 }
